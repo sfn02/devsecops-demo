@@ -1,0 +1,21 @@
+{% if form.errors %}
+    <div class="alert alert-danger">
+        <strong>Veuillez corriger les erreurs suivantes :</strong>
+        <ul>
+            {% for field, errors in form.errors.items %}
+                {% if field != '__all__' %}
+                    <li><strong>{{ field|capfirst }}:</strong>
+                {% else %}
+                    <li>
+                {% endif %}
+                {% for error in errors %}
+                    {{ error }}
+                {% endfor %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% else %}
+    <div class="alert alert-success">Appointment registered successfully!</div>
+{% endif %}
