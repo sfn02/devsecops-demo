@@ -3,7 +3,7 @@ pipeline {
     // Required for GitHub webhooks to find the job
         githubProjectProperty(projectUrlStr: 'https://github.com/sfn02/devsecops-demo')
     
-    // Ensures Jenkins recognizes the GitHub trigger
+
         disableConcurrentBuilds()  
     }
     triggers { githubPush() }
