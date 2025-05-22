@@ -15,3 +15,8 @@ sqlparse==0.5.3
 urllib3==2.4.0
 psycopg2-binary==2.9.9
 
+semgrep
+pytest
+pytest-django
+model_bakery
+pytest-cov
