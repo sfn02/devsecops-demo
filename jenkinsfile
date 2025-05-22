@@ -1,12 +1,13 @@
 pipeline {
-//git_nnok
-    agent any
     options {
+    // Required for GitHub webhooks to find the job
         githubProjectProperty(projectUrlStr: 'https://github.com/sfn02/devsecops-demo')
+    
+    // Ensures Jenkins recognizes the GitHub trigger
+        disableConcurrentBuilds()  
     }
-    triggers {
-        githubPush()
-    }
+    triggers { githubPush() }
+
 
     stages {
         stage('Checkout code') {
@@ -18,7 +19,7 @@ pipeline {
 
         }
 
-        stage('Run unit Tests'){
+        stage('Run unit tests'){
             environment{
                 DJANGO_SETTINGS_MODULE='RendezVous.settings.dev'
             }
@@ -28,17 +29,29 @@ pipeline {
                 sh '''
 
                 python3 -m venv test_env
+
                 . ./test_env/bin/activate
+
                 cp $ENV_FILE .env
+
                 chmod 600 .env  
+
                 python -m pip install --upgrade pip
+
                 python -m pip install python-dotenv
+
                 python -c 'from dotenv import load_dotenv;import os;load_dotenv();x = os.environ["DEBUG"];print(x)'
+
                 cat .env
+
                 echo $ALLOWED_HOSTS
+
                 deactivate
+
                 rm -rf ./test_env
+
                     '''
+
                 }
 
             }
