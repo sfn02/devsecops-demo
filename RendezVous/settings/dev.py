@@ -3,7 +3,7 @@ import os,sys
 
 from dotenv import load_dotenv
 from datetime import timedelta
-load_dotenv('/home/shr3dr/projects/devsecops-demo/RendezVous/.env.dev')
+load_dotenv('/home/shr3dr/projects/devsecops-demo/RendezVous/.env')
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '$2a$10$zMv2skn0DWEfsZGG91rC/O')
