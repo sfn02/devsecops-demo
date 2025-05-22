@@ -1,4 +1,3 @@
-# Development and runtime artifacts
 
 *.pyc
 __pycache__/
@@ -10,29 +9,54 @@ __pycache__/
 dist/
 build/
 
-# Version control
 .git/
 .gitignore
 .gitmodules
 
-# IDE and editor files
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# Local secrets and configs
 secrets.*
 config_local.*
 
-# Logs and temp files
 *.log
 *.tmp
 temp/
 
-# Documentation
 docs/_build/
 
-# Docker files (except what's needed)
 Dockerfile.dev
 docker-compose.override.yml
+
+
+.env*
+.git/
+.gitignore
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+.env*
+!.env.sample  # Allow ONLY production env file (if needed)
+secrets/
+
+Dockerfile.dev
+docker-compose*
+docker-compose.override.yml
+.dockerignore
+.venv/
+venv/
+docs/
+tests/
+
+*.egg-info/
+dist/
+build/
+
+.idea/
+.vscode/
