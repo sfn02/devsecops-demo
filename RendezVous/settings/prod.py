@@ -3,7 +3,7 @@ import os,sys
 
 from dotenv import load_dotenv
 from datetime import timedelta
-load_dotenv('/home/shr3dr/projects/devsecops-demo/RendezVous/.env.prod')
+load_dotenv('/home/shr3dr/projects/devsecops-demo/RendezVous/.env')
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
