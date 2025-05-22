@@ -1,0 +1,65 @@
+{% if appointments %}
+{% for appointment in appointments %}
+<tr id="appointment-{{ appointment.id }}">
+
+    <td>{{ appointment.patient }}</td>
+    <td>{{ appointment.reason }}</td>
+    <td>{{ appointment.date_scheduled }}</td>
+    <td>
+        {% if appointment.status == 'cancelled' %}
+            <span class="badge bg-danger">Cancelled</span>
+        {% elif appointment.status == 'completed' %}
+            <span class="badge bg-secondary">Completed</span>
+        {% elif appointment.status == 'confirmed' %}
+            <span class="badge bg-info text-dark">Confirmed</span>
+        {% else %}
+            <span class="badge bg-success">{{ appointment.status|capfirst }}</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if appointment.status == 'scheduled' %}
+            <!-- Confirm -->
+            <form method="post"
+                  hx-patch="{% url 'appointment_update' appointment.id %}"
+                  hx-target="#appointment-{{ appointment.id }}"
+                  hx-swap="outerHTML"
+                  style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="confirmed">
+                <button type="submit" class="btn btn-sm btn-outline-success">Confirm</button>
+            </form>
+            <form method="post"
+                hx-patch="{% url 'appointment_update' appointment.id %}"
+                hx-target="#appointment-{{ appointment.id }}"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to cancel this appointment?"
+                style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="cancelled">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+            </form>
+
+
+        {% elif  appointment.status == 'confirmed' %}
+            <!-- Mark as Completed -->
+            <form method="post"
+                  hx-patch="{% url 'appointment_update' appointment.id %}"
+                  hx-target="#appointment-{{ appointment.id }}"
+                  hx-swap="outerHTML"
+                  style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="completed">
+                <button type="submit" class="btn btn-sm btn-outline-primary">Complete</button>
+            </form>
+
+        {% elif appointment.status == 'cancelled' or appointment.status == 'completed' %}
+            <em class="text-muted">No action</em>
+        {% endif %}
+    </td>
+    {% endfor %}
+</tr>
+{% else %}
+<tr>
+    <td colspan="5" class="text-center text-muted">No appointments found.</td>
+</tr>
+{% endif %}

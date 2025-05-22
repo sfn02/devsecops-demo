@@ -1,0 +1,38 @@
+# Development and runtime artifacts
+
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+*.egg-info/
+dist/
+build/
+
+# Version control
+.git/
+.gitignore
+.gitmodules
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local secrets and configs
+secrets.*
+config_local.*
+
+# Logs and temp files
+*.log
+*.tmp
+temp/
+
+# Documentation
+docs/_build/
+
+# Docker files (except what's needed)
+Dockerfile.dev
+docker-compose.override.yml
