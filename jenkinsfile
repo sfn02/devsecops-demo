@@ -18,7 +18,7 @@ pipeline {
 
         }
 
-        stage('Run unit tests'){
+        stage('Run unit Tests'){
             environment{
                 DJANGO_SETTINGS_MODULE='RendezVous.settings.dev'
             }
