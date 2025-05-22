@@ -2,9 +2,9 @@ pipeline {
 
     agent any
     options {
-        githubProjectProperty(repoUrl: 'https://github.com/sfn02/devsecops-demo')
+        githubProjectProperty(projectUrlStr: 'https://github.com/sfn02/devsecops-demo')
     }
-        triggers {
+    triggers {
         githubPush()
     }
 
@@ -20,7 +20,7 @@ pipeline {
 
         stage('Run unit tests'){
             environment{
-                DJANGO_SETTINGS_MODULE='RendezVous.settings.dev' //random comment_
+                DJANGO_SETTINGS_MODULE='RendezVous.settings.dev'
             }
 
             steps{
