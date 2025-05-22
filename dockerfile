@@ -35,7 +35,7 @@ ENV DJANGO_SETTINGS_MODULE=RendezVous.settings.dev
 
 RUN pytest
 
-# ===== PRODUCTION STAGE =====
+# ===== PRODUCTION STAGE ====
 FROM python:3.11-slim as production
 
 WORKDIR /app
