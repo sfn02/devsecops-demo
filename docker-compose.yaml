@@ -3,7 +3,7 @@ services:
 
   web:
     build: .
-    container_name: rendez_vous_app
+    container_name: rendezvous_app
     env_file:
       - .env
     volumes:
@@ -22,6 +22,7 @@ services:
 
   db:
     image: postgres:17
+    container_name: rendezvous_db
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     networks:
