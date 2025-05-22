@@ -42,7 +42,7 @@ __pycache__/
 .pytest_cache/
 
 .env*
-!.env.sample  # Allow ONLY production env file (if needed)
+!.env.sample 
 secrets/
 
 Dockerfile.dev
@@ -53,6 +53,7 @@ docker-compose.override.yml
 venv/
 docs/
 tests/
+
 
 *.egg-info/
 dist/
