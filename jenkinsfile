@@ -1,5 +1,5 @@
 pipeline {
-//git_nn
+//git_nnok
     agent any
     options {
         githubProjectProperty(projectUrlStr: 'https://github.com/sfn02/devsecops-demo')
