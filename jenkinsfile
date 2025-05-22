@@ -20,7 +20,7 @@ pipeline {
 
         stage('Run unit tests'){
             environment{
-                DJANGO_SETTINGS_MODULE='RendezVous.settings.dev' //random comment
+                DJANGO_SETTINGS_MODULE='RendezVous.settings.dev' //random comment_
             }
 
             steps{
