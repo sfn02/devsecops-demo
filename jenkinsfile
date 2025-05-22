@@ -9,32 +9,22 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout code') {
-
             steps {
-
-
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sfn02/devsecops-demo.git']])
-
+                checkout scmGit(branches: [[name: '*/main']], 
+                extensions: [], 
+                userRemoteConfigs: [[url: 'https://github.com/sfn02/devsecops-demo.git']])
             }
 
         }
 
         stage('Run unit tests'){
-
             environment{
-
                 DJANGO_SETTINGS_MODULE='RendezVous.settings.dev'
-
             }
 
             steps{
-
             withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
-
-                    // 2. Copy to working directory (temporarily)
-
                 sh '''
 
                 python3 -m venv test_env
