@@ -12,14 +12,14 @@ RUN apt-get update && \
 
 COPY requirements.txt .
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements-prod.txt
 
 
 
 COPY . .
 
 
-ENV DJANGO_SETTINGS_MODULE=RendezVous.settings.prod
+
 EXPOSE 8000
 
 CMD ["./entrypoint.sh"]
