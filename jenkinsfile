@@ -28,27 +28,16 @@ pipeline {
                 sh '''
 
                 python3 -m venv test_env
-
                 . ./test_env/bin/activate
-
                 cp $ENV_FILE .env
-
                 chmod 600 .env  
-
                 python -m pip install --upgrade pip
-
                 python -m pip install python-dotenv
-
                 python -c 'from dotenv import load_dotenv;import os;load_dotenv();x = os.environ["DEBUG"];print(x)'
-
                 cat .env
-
                 echo $ALLOWED_HOSTS
-
                 deactivate
-
                 rm -rf ./test_env
-
                     '''
 
                 }
