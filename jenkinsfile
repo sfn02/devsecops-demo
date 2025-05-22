@@ -78,7 +78,6 @@ pipeline {
             
             echo "Checking status of Docker containers:"
             docker-compose ps -a # Show all containers, including exited ones
-            
             echo "Displaying Nginx container logs for debugging:"
             docker-compose logs nginx # Get logs specifically from the Nginx container       
             echo "Displaying Web container logs for debugging:"
