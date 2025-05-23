@@ -20,7 +20,6 @@ def test_patient_creation():
 
 @pytest.mark.django_db
 def test_doctor_requires_doctor_role():
-    """Test that only users with 'doctor' role can be assigned"""
 
     patient_user = baker.make(User, role='patient', first_name='Soufiane')
     
