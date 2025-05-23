@@ -53,7 +53,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh '''
                         cp $ENV_FILE .env
-                        docker-compose -d up --build
+                        docker-compose up -d --build
                     '''
                 }
             }
