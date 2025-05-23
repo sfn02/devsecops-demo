@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     options {
-        // Remove .git from project URL
+        // Remove .git from project URL to test the webhook
         githubProjectProperty(
             projectUrlStr: 'https://github.com/sfn02/devsecops-demo',
             displayName: 'DevSecOps Pipeline'
