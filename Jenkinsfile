@@ -50,6 +50,9 @@ pipeline {
 		}
         stage('Build & Integration tests') {
             steps {
+                environment{
+                    DOCKER_HOST='unix:///var/run/docker.sock'
+                }
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh '''
                         cp $ENV_FILE .env
