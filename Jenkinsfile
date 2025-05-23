@@ -57,8 +57,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh '''
                         cp $ENV_FILE .env
-                        docker-compose up -d 
-                        newman --help
+                        echo $DOCKER_HOST
                     '''
                 }
             }
