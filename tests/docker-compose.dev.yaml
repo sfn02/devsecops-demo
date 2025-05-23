@@ -3,30 +3,36 @@ services:
 
   web:
     build: .
-    container_name: rendezvous_app
+    container_name: test_app
     env_file:
       - .env
     volumes:
-      - static_volume:/app/static 
-      - media_volume:/app/media 
+      - static_volume_dev:/app/static 
+      - media_volume_dev:/app/media 
 
     expose:
       - 8000
     
     restart: always
     networks:
-      - app_network
+      - app_network_dev
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl http://localhost:8000/users/auth/login/"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
 
   db:
     image: postgres:17
-    container_name: rendezvous_db
+    container_name: test_db
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres_data_dev:/var/lib/postgresql/data/
     networks:
-      - app_network
+      - app_network_dev
     env_file:
       - .env
     expose:
@@ -49,24 +55,26 @@ services:
 
   nginx:
     build: ./nginx
+    container_name: test_nginx
     ports:
       - 80:80
       - 443:443 
     volumes:
-      - static_volume:/usr/share/app/static/
-      - ./nginx.d/:/etc/nginx/conf.d
+      - static_volume_dev:/usr/share/app/static/
+      - ./nginx.d/:/etc/nginx/conf.d/
 
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     restart: always 
     networks:
-      - app_network
+      - app_network_dev
    
     
 volumes:
-  postgres_data:
-  static_volume:
-  media_volume:
+  postgres_data_dev:
+  static_volume_dev:
+  media_volume_dev:
 networks:
-  app_network:
+  app_network_dev:
     driver: bridge
