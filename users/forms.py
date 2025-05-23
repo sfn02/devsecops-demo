@@ -16,14 +16,16 @@ class RegisterForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
-        try:
-            user = super().save(commit=False)
-            user.first_name = cleaned_data.get('first_name')
-            user.last_name = cleaned_data.get('last_name')
-            user.email = cleaned_data.get('email')
-            validate_password(user=user,password=password)
-        except ValidationError as error:
-            self.add_error('password', error)
+        if password:
+            try:
+                user = super().save(commit=False)
+                user.first_name = cleaned_data.get('first_name')
+                user.last_name = cleaned_data.get('last_name')
+                user.email = cleaned_data.get('email')
+                validate_password(user=user,password=password)
+            except ValidationError as error:
+                self.add_error('password', error)
+
         return cleaned_data
 
     def save(self,commit=True):
