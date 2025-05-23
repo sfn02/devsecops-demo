@@ -1,44 +1,65 @@
 pipeline {
     agent any
-    options {
-        githubProjectProperty(projectUrlStr: 'https://github.com/sfn02/devsecops-demo.git')
     
-
-        disableConcurrentBuilds() 
+    options {
+        // Remove .git from project URL
+        githubProjectProperty(
+            projectUrlStr: 'https://github.com/sfn02/devsecops-demo',
+            displayName: 'DevSecOps Pipeline'
+        )
+        disableConcurrentBuilds()
     }
-    triggers { githubPush() }
-
+    
+    triggers { 
+        githubPush() 
+    }
 
     stages {
-        stage('Checkout code') {
+        stage('Checkout Code') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], 
-                extensions: [], 
-                userRemoteConfigs: [[credentialsId: 'github_user_pass_token', 
-                url: 'https://github.com/sfn02/devsecops-demo.git']])
-
-        }
-        stage('Run unit tests'){
-            environment{
-                DJANGO_SETTINGS_MODULE='RendezVous.settings.dev'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    extensions: [
+                        [$class: 'CleanBeforeCheckout']
+                    ],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/sfn02/devsecops-demo.git',
+                        credentialsId: 'github_user_pass_token'
+                    ]]
+                ])
             }
-            steps{
+        }
+
+        stage('Run Unit Tests') {
+            environment {
+                DJANGO_SETTINGS_MODULE = 'RendezVous.settings.dev'
+            }
+            steps {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh '''
-                        ls
+                        ls -la
+                        cat $ENV_FILE
                     '''
                 }
             }
         }
-//
-        stage('Build'){
-    steps{
-        withCredentials([file(credentialsId: 'env_file_prod', variable: 'ENV_FILE')]) {
-            sh '''
-            pwd
-            '''
+
+        stage('Build') {
+            steps {
+                withCredentials([file(credentialsId: 'env_file_prod', variable: 'ENV_FILE')]) {
+                    sh '''
+                        pwd
+                        ls -la
+                    '''
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
         }
     }
 }
-    }
-} 
