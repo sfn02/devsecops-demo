@@ -27,7 +27,7 @@ pipeline {
             steps{
             withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                 sh '''
-
+                pwd
                 python3 -m venv test_env
 
                 . ./test_env/bin/activate
