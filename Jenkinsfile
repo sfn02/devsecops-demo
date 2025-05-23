@@ -18,21 +18,17 @@ pipeline {
                 url: 'https://github.com/sfn02/devsecops-demo.git']])
 
         }
-
         stage('Run unit tests'){
             environment{
                 DJANGO_SETTINGS_MODULE='RendezVous.settings.dev'
             }
-
             steps{
-            withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
-                sh '''
-                    ls
+                withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
+                    sh '''
+                        ls
                     '''
                 }
-
             }
-
         }
 //
         stage('Build'){
@@ -44,6 +40,5 @@ pipeline {
         }
     }
 }
-
     }
 } 
