@@ -54,6 +54,7 @@ pipeline {
                     sh '''
                         cp $ENV_FILE .env
                         docker-compose up -d 
+                        newman --help
                     '''
                 }
             }
