@@ -49,15 +49,14 @@ pipeline {
 			}
 		}
         stage('Build & Integration tests') {
-            environment{
-                DOCKER_HOST='unix:///var/run/docker.sock'
-            }
+
             steps {
 
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh '''
                         cp $ENV_FILE .env
                         echo $DOCKER_HOST
+                        docker-compose up 
                     '''
                 }
             }
