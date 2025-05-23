@@ -14,8 +14,8 @@ pipeline {
             steps {
                 checkout scmGit(branches: [[name: '*/main']], 
                 extensions: [], 
-                userRemoteConfigs: [[url: 'https://github.com/sfn02/devsecops-demo.git']])
-            }
+                userRemoteConfigs: [[credentialsId: 'github_user_pass_token', 
+                url: 'https://github.com/sfn02/devsecops-demo.git']])
 
         }
 
