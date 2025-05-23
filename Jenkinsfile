@@ -29,11 +29,8 @@ pipeline {
                 sh '''
 
                 python3 -m venv test_env
-
                 . ./test_env/bin/activate
-
                 cp $ENV_FILE .env
-
                 chmod 600 .env  
                 python -m pip install --upgrade pip
                 python -m pip install python-dotenv
