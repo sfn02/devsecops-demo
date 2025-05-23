@@ -27,7 +27,6 @@ pipeline {
             steps{
             withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                 sh '''
-
                 python3 -m venv test_env
                 . ./test_env/bin/activate
                 cp $ENV_FILE .env
@@ -36,7 +35,7 @@ pipeline {
                 python -m pip install python-dotenv
                 python -c 'from dotenv import load_dotenv;import os;load_dotenv();x = os.environ["DEBUG"];print(x)'
                 cat .env
-                echo $ALLOWED_HOSTS
+                echo $ 
                 deactivate
                 rm -rf ./test_env
                     '''
@@ -45,7 +44,7 @@ pipeline {
             }
 
         }
-
+//
         stage('Build'){
     steps{
         withCredentials([file(credentialsId: 'env_file_prod', variable: 'ENV_FILE')]) {
