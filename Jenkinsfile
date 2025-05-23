@@ -42,17 +42,18 @@ pipeline {
 			. ./test_env/bin/activate
 			pip3 install -r requirements-dev.txt
 			pytest
+            deactivate
 			rm -rf ./test_env
 			'''
 				}
 			}
 		}
-        stage('Build') {
+        stage('Build & Integration tests') {
             steps {
-                withCredentials([file(credentialsId: 'env_file_prod', variable: 'ENV_FILE')]) {
+                withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh '''
-                        pwd
-                        ls -la
+                        cp $ENV_FILE .env
+                        docker-compose -d up --build
                     '''
                 }
             }
