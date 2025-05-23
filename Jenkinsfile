@@ -1,7 +1,7 @@
 pipeline {
+    agent any
     options {
-    // Required for GitHub webhooks to find the job
-        githubProjectProperty(projectUrlStr: 'https://github.com/sfn02/devsecops-demo')
+        githubProjectProperty(projectUrlStr: 'https://github.com/sfn02/devsecops-demo.git')
     
 
         disableConcurrentBuilds() 
