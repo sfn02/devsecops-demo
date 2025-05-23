@@ -40,7 +40,6 @@ pipeline {
                 deactivate
                 rm -rf ./test_env
                     '''
-
                 }
 
             }
