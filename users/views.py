@@ -22,6 +22,7 @@ from datetime import datetime,timedelta
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
+from rest_framework_simplejwt.exceptions import TokenError,InvalidToken
 
 
 class RegistrationFormView(APIView):
@@ -174,19 +175,56 @@ class LoginView(TokenObtainPairView):
     def get(self,request):
         return render(request,template_name='users/login.html')
 
-class RefreshToken(TokenRefreshView):
-    serializer_class = TokenObtainPairSerializer
+class RefreshTokenView(TokenRefreshView):
+    def post(self,request):
+        refresh = request.COOKIES.get('refresh_token') or request.data.get('refresh')
+        if refresh:
+            try:
+                old_refresh = RefreshToken(refresh)
+                old_refresh.blacklist()
+                new_refresh = RefreshToken()
+                access = str(new_refresh.access_token)
+                refresh = str(new_refresh)
+                old_refresh.blacklist()
+                response = Response(
+                    {
+                    "access":access,
+                    "refresh":refresh
+                    }       
+                )
+                response.set_cookie(
+                    key='refresh_token',
+                    value=refresh,
+                    httponly=True,
+                    secure=False,
+                    samesite='Lax'
+                    )
+                response.set_cookie(
+                    key='access_token',
+                    value=access,
+                    httponly=True,
+                    secure=False,
+                        samesite='Lax'
+                    )
+                return response
+            except (TokenError,InvalidToken) as e:
+                return Response(
+                    {
+                        "error":str(e)
+                    }
+                )
+
+
 
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
-    def get(self, request):
-        print(1)
+    def post(self, request):
         response = redirect('login_view')
-        refresh = request.COOKIES.get('refresh')
+        
+        refresh = request.COOKIES.get('refresh_token') or request.data.get('refresh')
         if refresh:
             token = RefreshToken(refresh)
-            print(2)
             token.blacklist()
             print("token blacklisted")
         
