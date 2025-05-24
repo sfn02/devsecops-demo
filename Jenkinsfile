@@ -56,7 +56,7 @@ pipeline {
                     sh '''
                         cp $ENV_FILE .env
                         echo $DOCKER_HOST
-                        docker-compose up 
+                        docker compose up 
                     '''
                 }
             }
