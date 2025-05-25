@@ -12,11 +12,7 @@
       "value": "nadiiik@gmail.com",
       "key": "email"
     },
-    {
-      "type": "any",
-      "value": "http://nginx",
-      "key": "BaseUrl"
-    },
+
     {
       "type": "any",
       "value": "true",
