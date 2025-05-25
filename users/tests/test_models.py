@@ -107,7 +107,7 @@ def test_user_update_profile(client):
     cookies=cookie,
     headers=header
     )
-    msg = response.data.get('msg')
+    msg = response.data.get('success')
     assert response.status_code == 201 and "Profile updated succesfully" in msg
 
 
