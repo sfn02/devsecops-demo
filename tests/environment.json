@@ -15,7 +15,7 @@
 
     {
       "type": "any",
-      "value": "true",
+      "value": "",
       "key": "skip_registration"
     },
     {
