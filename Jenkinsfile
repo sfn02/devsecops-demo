@@ -55,7 +55,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh '''
                         cp $ENV_FILE .env
-                        docker compose -f docker-compose.dev.yaml up --remove-orphans --volumes
+                        docker compose -f docker-compose.dev.yaml up --remove-orphans 
 
                     '''
                 }
