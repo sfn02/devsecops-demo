@@ -3,11 +3,12 @@ import os,sys
 
 from dotenv import load_dotenv
 from datetime import timedelta
-load_dotenv('/home/shr3dr/projects/devsecops-demo/RendezVous/.env')
+
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+load_dotenv(os.path.join(BASE_DIR,'.env'))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '$2a$10$zMv2skn0DWEfsZGG91rC/O')
 DEBUG = int(os.environ.get('DEBUG',0))
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS').split(" ")
