@@ -57,7 +57,7 @@ pipeline {
                         cp $ENV_FILE .env
                         echo $DOCKER_HOST
                         docker compose -f docker-compose.dev.yaml up -d 
-                        newman run collection.json -e environment.json
+                        newman run ./tests/collection.json -e ./tests/environment.json
                         docker compose down --remove-orphans --volumes
                     '''
                 }
