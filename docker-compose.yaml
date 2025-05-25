@@ -2,7 +2,9 @@
 services:
 
   web:
-    build: .
+    build: 
+      context: .
+      dockerfile: ./app/dockerfile
     container_name: rendezvous_app
     env_file:
       - .env
