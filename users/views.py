@@ -99,12 +99,7 @@ class ProfileView(APIView):
         return super().handle_exception(exc)  
     def get(self, request,pk=None):
         user = get_user_model()
-        if pk:
-            print(pk)
-            user = user.objects.get(pk=pk)
-        else:    
-            user = request.user    
-
+        user = request.user    
         serializer = UserSerializer(user)   
          
         if request.headers['Accept'] == 'application/json':
@@ -112,10 +107,9 @@ class ProfileView(APIView):
 
         return render(request, 'users/profile.html', {'user': request.user})
 
-    def post(self, request):
+    def post(self, request,pk=None):
         user = get_user_model()
-        user_id = request.data.get('user_id',request.user.id)
-        print(user_id)
+        user_id = request.data.get(pk,request.user.id)
         user = user.objects.filter(id=user_id).first()
         user.email = request.data.get('email', user.email)
         user.first_name = request.data.get('first_name', user.first_name)
@@ -127,7 +121,7 @@ class ProfileView(APIView):
             )
         user.save()
         if request.headers.get('Accept') == 'application/json':
-            response = Response({"msg":"Profile updated succesfully"},status=status.HTTP_201_CREATED)
+            response = Response({"success":"Profile updated succesfully"},status=status.HTTP_201_CREATED)
         else:
             response = Response("<small>Profile updated successfully</small>",status=status.HTTP_201_CREATED)
         return response
@@ -153,7 +147,9 @@ class LoginView(TokenObtainPairView):
                     "refresh":refresh,
                     "access":access
                 }
-            )
+                ,
+                status=status.HTTP_200_OK
+                )
             response.set_cookie(
                 key='refresh_token',
                 value=refresh,

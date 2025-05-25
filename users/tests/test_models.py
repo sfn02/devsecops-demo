@@ -109,3 +109,20 @@ def test_user_update_profile(client):
     )
     msg = response.data.get('msg')
     assert response.status_code == 201 and "Profile updated succesfully" in msg
+
+
+@pytest.fixture
+def create_user():
+    user = User.objects.create_user(
+        first_name="soufiane",
+        last_name="fhaili",
+        email="soufiane@gmail.com",
+        password="superStrongPassword"
+    )
+    print(User.objects.count())
+    return user
+
+@pytest.mark.django_db
+def test_fixture(client, create_user):
+    user = create_user
+    print(user)
