@@ -55,8 +55,8 @@ pipeline {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh '''
                         cp $ENV_FILE .env
-                        docker compose -f docker-compose.dev.yaml build --no-cache
-                        docker compose -f docker-compose.dev.yaml up
+                        docker compose -f docker-compose.dev.yaml up -d
+                        newman run tests/collection.json -e environment.json --env-var "BaseUrl=rendez-vous.test"
 
                     '''
                 }
