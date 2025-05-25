@@ -15,7 +15,7 @@ from rest_framework.exceptions import NotAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from django.http import JsonResponse
-from main.serializers import AppointmentSerializer
+from main.serializers import AppointmentSerializer,DoctorSerializer
 
 
 class PatientAppointmentListView(APIView):
@@ -27,7 +27,7 @@ class PatientAppointmentListView(APIView):
             return redirect('login_view') 
         return super().handle_exception(exc)  
 
-    def get(self,request):
+    def get(self,request,pk=None):
         apointments = Appointment.objects.filter(patient=request.user.patient)
         serializer = AppointmentSerializer(apointments,many=True)
         if request.headers['Accept'] == 'application/json':
@@ -61,7 +61,7 @@ class AppointmentCreateView(APIView):
             if request.headers['Accept'] == 'application/json':
                 return Response(
                     {
-                    "msg":"appointment created",
+                    "success":"appointment created",
                     "id":appointment.id
                     },
                     status=status.HTTP_201_CREATED
@@ -86,16 +86,28 @@ class CancelAppointmentView( APIView):
         if appointment.status != 'cancelled':
             appointment.cancel()
         serializer = AppointmentSerializer(appointment)
+        if request.headers.get('Accept') == 'application/json':
+            return Response(
+                {
+                    "id":serializer.data.get('id'),
+                    "status":serializer.data.get('status')
+                }
+                ,status=status.HTTP_200_OK
+            )
 
         return render(request,'appointments/partials/_patient_appointment_row.html',{"appointment":serializer.data})
 
 
-def filter_doctors_by_speciality(request):
-    speciality = request.GET.get('speciality')
-    doctors = Doctor.objects.filter(speciality=speciality)
+class filter_doctors_by_speciality(APIView):
+    def get(self,request):
+        speciality = request.GET.get('speciality')
+        doctors = Doctor.objects.filter(speciality=speciality)
 
-    html = render_to_string('appointments/partials/doctor_options.html', {'doctors': doctors})
-    return HttpResponse(html)
+        if request.headers.get('Accept') == 'application/json':
+            serializer = DoctorSerializer(doctors,many=True)
+            return Response(serializer.data)
+        html = render_to_string('appointments/partials/doctor_options.html', {'doctors': doctors})
+        return HttpResponse(html)
 
 class DoctorAppointmentListView(APIView):
     permission_classes = [IsAuthenticated]

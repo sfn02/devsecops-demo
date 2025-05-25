@@ -1,0 +1,59 @@
+{
+  "_": {
+    "postman_variable_scope": "environment",
+    "postman_exported_at": "2025-05-24T23:39:25.183Z",
+    "postman_exported_using": "Newman/6.2.1"
+  },
+  "id": "c35fe641-a108-4b44-b567-4e1bc3e7cb07",
+  "name": "RendezVous",
+  "values": [
+    {
+      "type": "any",
+      "value": "nadiiik@gmail.com",
+      "key": "email"
+    },
+    {
+      "type": "any",
+      "value": "http://www.rendez-vous.test:8000",
+      "key": "BaseUrl"
+    },
+    {
+      "type": "any",
+      "value": "true",
+      "key": "skip_registration"
+    },
+    {
+      "type": "any",
+      "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ4MTMxNTg3LCJpYXQiOjE3NDgxMzA5ODcsImp0aSI6IjJhNDA4MmE0ZjI2MTQ2NGRiYzhjNjAyOTc5N2QwYzZkIiwidXNlcl9pZCI6MTA1LCJyb2xlIjoicGF0aWVudCJ9.l5cKG5pPHeh2nzSMF2s6rm7lsKxV1kkL1tDE5kR4qGY",
+      "key": "auth_token"
+    },
+    {
+      "type": "any",
+      "value": 2,
+      "key": "doctor_id"
+    },
+    {
+      "type": "any",
+      "value": "2025-04-00T00:15",
+      "key": "date"
+    },
+    {
+      "type": "any",
+      "value": 32,
+      "key": "created_appointment_id"
+    },
+    {
+      "type": "any",
+      "value": "2025-06-20T09:00",
+      "key": "appointment_scheduled_date"
+    },
+    {
+      "type": "any",
+      "value": "2025-06-20T09:00",
+      "key": "password"
+    }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2025-05-24T23:56:28.142Z",
+  "_postman_exported_using": "Newman/6.2.1"
+}
