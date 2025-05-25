@@ -1,0 +1,24 @@
+FROM python:3.11-slim
+
+# Create app directory
+RUN mkdir -p /app
+WORKDIR /app
+
+
+# Install dependencies first (better layer caching)
+
+
+COPY requirements-dev.txt requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Ensure entrypoint is executable
+COPY ./tests/app/entrypoint.sh /app/tests/app/entrypoint.sh
+
+
+
+# Use absolute path for entrypoint
+CMD ["/app/tests/app/entrypoint.sh"]

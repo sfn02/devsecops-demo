@@ -52,7 +52,7 @@ docker-compose.override.yml
 .venv/
 venv/
 docs/
-tests/
+#tests/
 
 
 *.egg-info/
