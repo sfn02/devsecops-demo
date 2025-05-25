@@ -60,7 +60,7 @@ services:
       - web
     restart: always 
     networks:
-      - app_network
+      - dev_network
    
     
 volumes:
