@@ -2,7 +2,9 @@
 services:
 
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: ./tests/app/dockerfile
     container_name: dev_app
     env_file:
       - .env
