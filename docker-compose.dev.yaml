@@ -3,38 +3,32 @@ services:
 
   web:
     build: .
-    container_name: test_app
+    container_name: dev_app
     env_file:
-      - .env.dev
+      - .env
     volumes:
-      - static_volume_dev:/app/static 
-      - media_volume_dev:/app/media 
+      - static_volume:/app/static 
+      - media_volume:/app/media 
 
     expose:
       - 8000
     
     restart: always
     networks:
-      - app_network_dev
+      - dev_network
     depends_on:
       db:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl http://localhost:8000/users/auth/login/"]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 5s
 
   db:
     image: postgres:17
-    container_name: test_db
+    container_name: dev_db
     volumes:
       - postgres_data_dev:/var/lib/postgresql/data/
     networks:
-      - app_network_dev
+      - dev_network
     env_file:
-      - .env.prod
+      - .env
     expose:
       - 5432
     ports:
@@ -45,7 +39,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
     restart: always 
     healthcheck:
-      test: ["curl http://localhost:8000"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       retries: 5
       start_period: 30s
@@ -55,25 +49,24 @@ services:
 
   nginx:
     build: ./nginx
-    container_name: test_nginx
     ports:
       - 80:80
       - 443:443 
     volumes:
-      - static_volume_dev:/usr/share/app/static/
-      - ./nginx.d/:/etc/nginx/conf.d/
+      - static_volume:/usr/share/app/static/
+      - ./nginx.d/:/etc/nginx/conf.d
 
     depends_on:
-      web:
-        condition: service_healthy
+      - web
+    restart: always 
     networks:
-      - app_network_dev
+      - app_network
    
     
 volumes:
   postgres_data_dev:
-  static_volume_dev:
-  media_volume_dev:
+  static_volume:
+  media_volume:
 networks:
-  app_network_dev:
+  dev_network:
     driver: bridge

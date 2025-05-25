@@ -56,7 +56,9 @@ pipeline {
                     sh '''
                         cp $ENV_FILE .env
                         echo $DOCKER_HOST
-                        docker compose up 
+                        docker compose up -d
+                        newman run collection.json -e environment.json
+                        docker compose down --remove-orphans --volumes
                     '''
                 }
             }
