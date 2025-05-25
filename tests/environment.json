@@ -14,7 +14,7 @@
     },
     {
       "type": "any",
-      "value": "127.0.0.1",
+      "value": "http://nginx",
       "key": "BaseUrl"
     },
     {
