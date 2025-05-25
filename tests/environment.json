@@ -14,7 +14,7 @@
     },
     {
       "type": "any",
-      "value": "http://www.rendez-vous.test:8000",
+      "value": "http://www.rendez-vous.test",
       "key": "BaseUrl"
     },
     {
