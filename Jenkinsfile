@@ -41,7 +41,7 @@ pipeline {
 			python3 -m venv test_env
 			. ./test_env/bin/activate
 			pip3 install -r requirements-dev.txt
-			pytest
+			python -m pytest
             deactivate
 			rm -rf ./test_env
 			'''
