@@ -18,7 +18,7 @@ COPY . .
 # Ensure entrypoint is executable
 COPY ./tests/app/entrypoint.sh /app/tests/app/entrypoint.sh
 
-
+COPY ./tests/app/doctors.json /app/tests/app/doctors.json
 
 # Use absolute path for entrypoint
 CMD ["/app/tests/app/entrypoint.sh"]
