@@ -51,6 +51,7 @@ services:
 
   nginx:
     build: ./nginx
+    container_name: nginx_dev
     ports:
       - 80:80
       - 443:443 
