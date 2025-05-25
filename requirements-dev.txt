@@ -20,3 +20,4 @@ virtualenv
 pytest
 pytest-cov
 pytest-django
+model_bakery
