@@ -51,7 +51,7 @@ pipeline {
 			pip3 install -r requirements-dev.txt
 			python -m pytest > ${LOGDIR}/pytest.log
             deactivate
-			rm -rf ./test_env
+			rm -rf ./test_env 
 			'''
 				}
 			}
