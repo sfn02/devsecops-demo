@@ -13,8 +13,16 @@ pipeline {
     triggers { 
         githubPush() 
     }
+    environment {
+        LOGDIR="/security/logs/build-${env.BUILD_NUMBER}"
+    }
 
     stages {
+        stage('Preparing Log directory'){
+            steps{
+                sh 'mkdir -p ${LOGDIR}'
+            }
+        }
         stage('Checkout Code') {
             steps {
                 checkout([
@@ -41,7 +49,7 @@ pipeline {
 			python3 -m venv test_env
 			. ./test_env/bin/activate
 			pip3 install -r requirements-dev.txt
-			python -m pytest
+			python -m pytest > ${LOGDIR}/pytest.log
             deactivate
 			rm -rf ./test_env
 			'''
@@ -56,8 +64,7 @@ pipeline {
                     sh '''
                         cp $ENV_FILE .env
                         docker compose -f docker-compose.dev.yaml up -d
-                        newman run tests/collection.json -e tests/environment.json --env-var "BaseUrl=rendez-vous.test" --env-var "skip_registration=false"
-
+                        newman run tests/collection.json -e tests/environment.json --env-var "BaseUrl=rendez-vous.test" --env-var "skip_registration=false" > ${LOGDIR}/newman.log
                     '''
                 }
             }
