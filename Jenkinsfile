@@ -64,7 +64,7 @@ pipeline {
                     sh '''
                         cp $ENV_FILE .env
                         docker compose -f docker-compose.dev.yaml up -d
-                        newman run tests/collection.json -e tests/environment.json --env-var "BaseUrl=rendez-vous.test" --env-var "skip_registration=false" 2>&1 1>${LOGDIR}/newman.log
+                        newman run tests/collection.json -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" --env-var "skip_registration=false" 2>&1 1>${LOGDIR}/newman.log
                     '''
                 }
             }
