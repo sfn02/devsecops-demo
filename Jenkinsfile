@@ -50,7 +50,7 @@ pipeline {
                             ).trim().toInteger()
 
                             def errorCriticalCount = sh(
-                                script: 'jq -r \'[.results[] | select(.extra.severity == "ERROR" or .extra.severity == "CRITICAL")] | length]\' semgrep_scan.json',
+                                script: 'jq -r \'[.results[] | select(.extra.severity == "ERROR" or .extra.severity == "CRITICAL")] | length\' semgrep_scan.json',
                                 returnStdout: true
                             ).trim().toInteger()
 
@@ -96,12 +96,12 @@ pipeline {
                             """
 
                             def highSeverityCount = sh(
-                                script: 'jq -r \'[.results[] | select(.issue_severity == "HIGH")] | length]\' bandit_scan.json',
+                                script: 'jq -r \'[.results[] | select(.issue_severity == "HIGH")] | length\' bandit_scan.json',
                                 returnStdout: true
                             ).trim().toInteger()
 
                             def mediumSeverityCount = sh(
-                                script: 'jq -r \'[.results[] | select(.issue_severity == "MEDIUM")] | length]\' bandit_scan.json',
+                                script: 'jq -r \'[.results[] | select(.issue_severity == "MEDIUM")] | length\' bandit_scan.json',
                                 returnStdout: true
                             ).trim().toInteger()
 
