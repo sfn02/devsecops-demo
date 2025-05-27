@@ -147,15 +147,17 @@ pipeline {
             }
             steps{
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
-                    sh """
-                        cp $ENV_FILE .env
+                    script{
+                        sh('cp $ENV_FILE .env')
+                        sh """
                         python3 -m venv test_env
                         . ./test_env/bin/activate
                         pip3 install -r requirements-dev.txt
                         python -m pytest | tee "${LOGDIR}/pytest.log"
                         deactivate
                         rm -rf ./test_env
-                    """
+                        """
+                    }
                 }
             }
         }
