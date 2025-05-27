@@ -45,7 +45,7 @@ pipeline {
                         script{
                             sh 'semgrep --json --exclude "static/" --exclude "tests/" --severity "WARNING" > semgrep_scan.json || true'
                             def warningsCount = sh(
-                                script: 'jq -r \'[.results[] | select(.extra.severity == "WARNING")] | length]\' semgrep_scan.json',
+                                script: 'jq -r \'[.results[] | select(.extra.severity == "WARNING")] | length\' semgrep_scan.json',
                                 returnStdout: true
                             ).trim().toInteger()
 
@@ -180,7 +180,7 @@ pipeline {
     post {
         always {
             echo "Archiving SAST results and cleaning workspace..."
-            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json', allowEmpty: true
+            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json', allowEmptyArchive: true
             cleanWs()
         }
     }
