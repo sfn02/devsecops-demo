@@ -68,10 +68,7 @@ pipeline {
                                         message: .extra.message,
                                         owasp: .extra.metadata.owasp,
                                         cwe: .extra.metadata.cwe
-                                        }' semgrep_scan.json
-                                        > semgrep.log
-                                        ls -la semgrep_scan.json
-                                        cat semgrep_scan.json | tee ${LOGDIR}/semgrep.log"""
+                                        }' semgrep_scan.json | tee ${LOGDIR}/semgrep.log"""
                                 echo "Detailed Semgrep findings logged to ${LOGDIR}/semgrep.log"
                             } else {
                                 echo "No significant Semgrep findings (WARNING, ERROR, CRITICAL) to log in detail."
