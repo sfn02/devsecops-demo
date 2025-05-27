@@ -71,7 +71,7 @@ pipeline {
                                         }' semgrep_scan.json
                                         > semgrep.log
                                         ls -la semgrep_scan.json
-                                        cat semgrep_scan.json > ${LOGDIR}/semgrep.log"""
+                                        cat semgrep_scan.json | tee ${LOGDIR}/semgrep.log"""
                                 echo "Detailed Semgrep findings logged to ${LOGDIR}/semgrep.log"
                             } else {
                                 echo "No significant Semgrep findings (WARNING, ERROR, CRITICAL) to log in detail."
@@ -171,7 +171,7 @@ pipeline {
                         docker compose -f docker-compose.dev.yaml up -d --build --remove-orphans
                         sleep 5
                         newman run tests/collection.json 
-                        -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \\
+                        -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" 
                         --env-var "skip_registration=false" 2>&1 1>"${LOGDIR}/newman.log"
                     """
                 }
@@ -183,6 +183,7 @@ pipeline {
         always {
             echo "Archiving SAST results and cleaning workspace..."
             archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json', allowEmptyArchive: true
+            sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
             cleanWs()
         }
     }
