@@ -22,7 +22,7 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/users/auth/login/"] # Or any endpoint that signals app readiness
+      test: ["CMD", "curl", "-f", "http://rendez-vous.test:8000/users/auth/login/"] # Or any endpoint that signals app readiness
       interval: 10s
       timeout: 5s
       retries: 5
