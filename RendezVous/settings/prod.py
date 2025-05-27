@@ -4,7 +4,7 @@ import os,sys
 from dotenv import load_dotenv
 from datetime import timedelta
 
-
+# f"SELECT * FROM users where username={user} and password={password}" 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 

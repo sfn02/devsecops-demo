@@ -22,7 +22,6 @@ class PatientAppointmentListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def handle_exception(self, exc):
-    
         if isinstance(exc, NotAuthenticated):
             return redirect('login_view') 
         return super().handle_exception(exc)  
@@ -33,8 +32,6 @@ class PatientAppointmentListView(APIView):
         if request.headers['Accept'] == 'application/json':
             return JsonResponse(serializer.data,safe=False)
         return render(request,'appointments/patient_appointments.html',{"appointments":serializer.data})    
-
-
 
 
 class AppointmentCreateView(APIView):
