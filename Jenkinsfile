@@ -41,7 +41,7 @@ pipeline {
 
         stage('SAST'){
             parallel{
-                stage('SAST semgrep'){
+                stage('SAST Semgrep'){
                     steps{
                         script{
                             sh 'semgrep scan  --json --exclude "static/" --exclude "tests/" --severity "WARNING" > semgrep_scan.json || true'
@@ -68,7 +68,7 @@ pipeline {
 
                     }
                 }
-        stage('SAST Bandit') {
+        stage('SAST Bandit'){
             steps {
                 script {
                     sh """
@@ -115,7 +115,7 @@ pipeline {
         }
     }
 }
-}
+
 
         stage('Unit tests'){
 	   	   environment{
