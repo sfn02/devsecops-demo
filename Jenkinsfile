@@ -148,7 +148,7 @@ pipeline {
             steps{
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh """
-                        cp "${ENV_FILE}" .env
+                        cp $ENV_FILE .env
                         python3 -m venv test_env
                         . ./test_env/bin/activate
                         pip3 install -r requirements-dev.txt
@@ -180,8 +180,8 @@ pipeline {
         always {
             echo "Archiving SAST results and cleaning workspace..."
             archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json', allowEmptyArchive: true
-            sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
-            cleanWs()
+            //sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
+            //cleanWs()
         }
     }
 }
