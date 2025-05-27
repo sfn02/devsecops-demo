@@ -170,7 +170,9 @@ pipeline {
                         sleep 10
                         newman run tests/collection.json \
                         -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \
-                        --env-var "skip_registration=false" --workers 2  2>&1 1>"${LOGDIR}/newman.log"
+                        --env-var "skip_registration=false" --workers 2 \
+                        --delay-request 1000 --timeout-request 5000\
+                         2>&1 1>"${LOGDIR}/newman.log"
                         '''
                     }
                 }
