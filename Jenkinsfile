@@ -163,14 +163,16 @@ pipeline {
         stage('Build & Integration tests') {
             steps {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
-                    sh """
-                        cp $ENV_FILE .env
+                    script{
+                        sh('cp $ENV_FILE .env')
+                        sh '''
                         docker compose -f docker-compose.dev.yaml up -d --build 
                         sleep 10
                         newman run tests/collection.json \
                         -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \
-                        --env-var "skip_registration=false" --workers 2 --bail 2>&1 1>"${LOGDIR}/newman.log"
-                    """
+                        --env-var "skip_registration=false" --workers 2  2>&1 1>"${LOGDIR}/newman.log"
+                        '''
+                    }
                 }
             }
         }
