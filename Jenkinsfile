@@ -156,5 +156,4 @@ pipeline {
             archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json', allowEmpty: true
             cleanWs()
         }
-    }
 }
