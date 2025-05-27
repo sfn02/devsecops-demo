@@ -164,7 +164,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     sh """
-                        cp "${ENV_FILE}" .env
+                        cp $ENV_FILE .env
                         docker compose -f docker-compose.dev.yaml up -d --build 
                         sleep 5
                         newman run tests/collection.json \
