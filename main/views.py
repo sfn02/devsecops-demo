@@ -51,11 +51,9 @@ class AppointmentCreateView(APIView):
             form_data = request.POST
             form = AppointmentForm(data=form_data,request=request)
         
-        print("Is form valid?", form.is_valid()) 
-        print(request.data)
         if form.is_valid():
             appointment = form.save()
-            if request.headers['Accept'] == 'application/json':
+            if request.headers.get('Accept') == 'application/json':
                 return Response(
                     {
                     "success":"appointment created",
@@ -65,8 +63,8 @@ class AppointmentCreateView(APIView):
                     )
             return render(request,'appointments/partials/_appointment_result.html',{"form":form},status=status.HTTP_201_CREATED) 
 
-        if request.headers['Accept'] == 'application/json':
-            return JsonResponse(
+        if request.headers.get('Accept') == 'application/json':
+            return Response(
                 form.errors.get_json_data(),
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -77,10 +75,10 @@ class AppointmentCreateView(APIView):
 
 class CancelAppointmentView( APIView):
     permission_classes = [IsAuthenticated] 
-    def get(self,request,pk):
+    def delete(self,request,pk):
         appointment = get_object_or_404(Appointment, pk=pk)#, patient=request.user.patient)
 
-        if appointment.status != 'cancelled':
+        if appointment.status != 'cancelled' and appointment.status != 'completed':
             appointment.cancel()
         serializer = AppointmentSerializer(appointment)
         if request.headers.get('Accept') == 'application/json':
@@ -96,6 +94,7 @@ class CancelAppointmentView( APIView):
 
 
 class filter_doctors_by_speciality(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self,request):
         speciality = request.GET.get('speciality')
         doctors = Doctor.objects.filter(speciality=speciality)
@@ -110,19 +109,19 @@ class DoctorAppointmentListView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request):
         if request.user.role != 'doctor':
-            return Response({"msg":"Not allowed for patients"},status=status.HTTP_403_FORBIDDEN)
+            return Response(
+                {"msg":"Not allowed for patients"},
+                status=status.HTTP_403_FORBIDDEN
+                )
         appointments = Appointment.objects.filter(doctor=request.user.doctor)
 
         if request.GET:
-            print('get')
             reason = request.GET.get('reason')
             appointment_status = request.GET.get('status')
             if reason:
                 apointments = appointments.filter(doctor=request.user.doctor,reason=reason)
             if appointment_status:
-                print('status')
                 appointments = appointments.filter(doctor=request.user.doctor,status=appointment_status)
-                print(appointments)
 
         serializer = AppointmentSerializer(appointments,many=True)    
         print(serializer.data)
@@ -144,7 +143,7 @@ class DoctorUpdateAppointmentView(APIView):
                 status=status.HTTP_403_FORBIDDEN
                 )
 
-        appointment = get_object_or_404(Appointment,pk=pk)
+        appointment = get_object_or_404(Appointment,pk=pk,doctor=request.user.doctor)
         if request.data:
             appointment_status = request.data.get('status')
             match appointment_status:

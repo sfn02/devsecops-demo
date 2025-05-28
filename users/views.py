@@ -35,7 +35,6 @@ class RegistrationFormView(APIView):
         print(request.data)
         if request.content_type == 'application/json':
             form = RegisterForm(request.data)
-            print(form.is_valid())
             if form.is_valid():
                 user = form.save()
                 response = Response({
@@ -53,14 +52,9 @@ class RegistrationFormView(APIView):
             return Response(errors,status=status.HTTP_400_BAD_REQUEST)
         
         form = RegisterForm(request.POST)
-
-        print(form.is_valid())
-        print(request.content_type)
         if form.is_valid():
             form.save()
-            response = HttpResponse(status=status.HTTP_201_CREATED)
-            if request.headers.get('HX-Request') == 'true':
-                response['HX-Redirect'] = reverse('login_view')   
+            response = redirect('login_view')   
             return response
         else:
             return render(request, 'users/register.html', {'form': form})
@@ -97,20 +91,18 @@ class ProfileView(APIView):
         if isinstance(exc, NotAuthenticated):
             return redirect('login_view') 
         return super().handle_exception(exc)  
-    def get(self, request,pk=None):
+    def get(self, request):
         user = get_user_model()
         user = request.user    
         serializer = UserSerializer(user)   
          
         if request.headers['Accept'] == 'application/json':
             return JsonResponse(serializer.data)
-
         return render(request, 'users/profile.html', {'user': request.user})
 
-    def post(self, request,pk=None):
+    def put(self, request):
         user = get_user_model()
-        user_id = request.data.get(pk,request.user.id)
-        user = user.objects.filter(id=user_id).first()
+        user = user.objects.get(pk=request.user.id)
         user.email = request.data.get('email', user.email)
         user.first_name = request.data.get('first_name', user.first_name)
         user.last_name = request.data.get('last_name',user.last_name)
@@ -235,3 +227,9 @@ class LogoutView(APIView):
 
         logout(request)
         return response
+
+def root_redirect(request):
+    if request.user.is_authenticated:
+        return redirect('profile_view')
+    else:
+        return redirect('login_view')    

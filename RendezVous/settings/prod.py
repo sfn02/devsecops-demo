@@ -130,6 +130,4 @@ if 'test' in sys.argv:
         'django.contrib.auth.hashers.Argon2PasswordHasher',
         'django.contrib.auth.hashers.PBKDF2PasswordHasher',
         ]
-
-print(DATABASES)
-print(ALLOWED_HOSTS)
+SESSION_COOKIE_HTTPONLY = True

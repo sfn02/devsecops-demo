@@ -167,26 +167,32 @@ pipeline {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
                     script{
                         sh('cp $ENV_FILE .env')
-                        sh '''
+                        sh(
+                        script: """
                         docker compose -f docker-compose.dev.yaml up -d --build --remove-orphans --wait
                         sleep 10
                         newman run tests/collection.json \
                         -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \
                         --env-var "skip_registration=false" \
                         --delay-request 1000 --timeout-request 3000 
-                        '''
+                        """
+
+                        )
                     }
                 }
             }
         }
-    } // End of stages
+    } 
 
     post {
         always {
             echo "Archiving SAST results and cleaning workspace..."
             archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json', allowEmptyArchive: true
-            //sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
-            //cleanWs()
+            sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
+            cleanWs()
+        }
+        success{
+            echo "Build ${env.BUILD_NUMBER} successfully built"
         }
     }
 }
