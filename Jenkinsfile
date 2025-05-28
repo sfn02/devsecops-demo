@@ -90,7 +90,7 @@ pipeline {
                         script {
                             echo "--- Running Bandit SAST Scan ---"
                             sh """
-                                bandit -r . -f json --exclude "static/" --exclude "tests/" > bandit_scan.json || true
+                                bandit -r . -f json --exclude "static/" --exclude "*/tests/" > bandit_scan.json || true
                             """
 
                             def highSeverityCount = sh(
@@ -187,7 +187,7 @@ pipeline {
     post {
         always {
             echo "Archiving SAST results and cleaning workspace..."
-            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json, pytest.log', allowEmptyArchive: true
             sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
             cleanWs()
         }
