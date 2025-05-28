@@ -98,12 +98,11 @@ class filter_doctors_by_speciality(APIView):
     def get(self,request):
         speciality = request.GET.get('speciality')
         doctors = Doctor.objects.filter(speciality=speciality)
-
+        serializer = DoctorSerializer(doctors,many=True)
+        print(serializer.data)
         if request.headers.get('Accept') == 'application/json':
-            serializer = DoctorSerializer(doctors,many=True)
             return Response(serializer.data)
-        html = render_to_string('appointments/partials/doctor_options.html', {'doctors': doctors})
-        return HttpResponse(html)
+        return render(request,'appointments/partials/doctor_options.html',{'doctors':doctors})
 
 class DoctorAppointmentListView(APIView):
     permission_classes = [IsAuthenticated]
