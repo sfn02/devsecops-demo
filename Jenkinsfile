@@ -120,7 +120,7 @@ pipeline {
                                         message: .issue_text,
                                         more_info: .more_info
                                       }
-                                    ' bandit_scan.json > "${LOGDIR}/bandit.log"
+                                    ' bandit_scan.json | tee ${LOGDIR}/bandit.log
                                 """
                                 echo "Detailed Bandit findings logged to ${LOGDIR}/bandit.log"
                             } else {
@@ -169,8 +169,7 @@ pipeline {
                         sh('cp $ENV_FILE .env')
                         sh(
                         script: """
-                        docker compose -f docker-compose.dev.yaml up -d --build --remove-orphans --wait
-                        sleep 10
+                        docker compose -f docker-compose.dev.yaml up -d --build --remove-orphans
                         newman run tests/collection.json \
                         -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \
                         --env-var "skip_registration=false" \
