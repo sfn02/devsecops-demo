@@ -12,7 +12,6 @@ urlpatterns = [
     path('auth/logout/',LogoutView.as_view(),name='logout'),
     path('auth/token/refresh/',RefreshTokenView.as_view(),name='refresh_token_view'),
     path('profile/',ProfileView.as_view(),name='profile_view'),
-    path('profile/<int:pk>',ProfileView.as_view(),name='profile_view'),
     path('refresh/',RefreshTokenView.as_view())
     
 ]

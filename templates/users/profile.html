@@ -11,8 +11,7 @@
                     <h2 class="text-center text-success mb-4">{{request.user.first_name|safe}}'s profile</h2>
 
                     <form 
-                        method="POST"
-                        hx-post="{% url 'profile_view' %}"
+                        hx-put="{% url 'profile_view' %}"
                         hx-target="#response"
                         hx-swap="innerHTML"
                     >
