@@ -170,7 +170,8 @@ pipeline {
                         sh(
                         script: """
                         sudo /setup.sh
-                        docker compose -f docker-compose.dev.yaml up -d --build --remove-orphans --wait
+                        docker compose -f docker-compose.dev.yaml build --no-cache
+                        docker compose -f docker-compose.dev.yaml up -d --wait
                         newman run tests/collection.json \
                         -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \
                         --env-var "skip_registration=false" \
