@@ -46,7 +46,7 @@ def test_user_register(client):
         "password":"Complex_password"
     }
     )
-    assert response.status_code == 201
+    assert response.status_code == 302
 
 @pytest.mark.django_db
 def test_user_login(client):
@@ -100,7 +100,7 @@ def test_user_update_profile(client):
         'Accept':'application/json'
     }
     cookie = response.cookies.get('access_token')
-    response = client.post(reverse('profile_view'),
+    response = client.put(reverse('profile_view'),
     json={
         "first_name":"mohamed"
     },
