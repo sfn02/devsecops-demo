@@ -172,6 +172,7 @@ pipeline {
                         sudo /setup.sh
                         docker compose -f docker-compose.dev.yaml build --no-cache
                         docker compose -f docker-compose.dev.yaml up -d --wait
+                        sleep 10
                         newman run tests/collection.json \
                         -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \
                         --env-var "skip_registration=false" \
