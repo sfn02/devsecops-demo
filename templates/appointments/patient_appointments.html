@@ -48,7 +48,7 @@
                                         {% if appointment.status != 'cancelled' and appointment.status != 'completed' %}
                                         <button
                                             class="btn btn-sm btn-outline-danger"
-                                            hx-get="{% url 'cancel_appointment' appointment.id %}"
+                                            hx-delete="{% url 'cancel_appointment' appointment.id %}"
                                             hx-target="#appointment-{{ appointment.id }}"
                                             hx-swap="outerHTML"
                                             hx-confirm="Are you sure you want to cancel this appointment?">

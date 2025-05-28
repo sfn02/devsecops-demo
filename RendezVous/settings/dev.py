@@ -124,4 +124,4 @@ if 'test' in sys.argv:
         #'django.contrib.auth.hashers.PBKDF2PasswordHasher',
         ] 
 
-print(TEMPLATES[0].get('DIRS'))
+SESSION_COOKIE_HTTPONLY = True

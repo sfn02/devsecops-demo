@@ -54,3 +54,7 @@ static
 staticfiles/
 mediafiles/
 node_modules/
+
+reports/
+*report*
+*-report*
