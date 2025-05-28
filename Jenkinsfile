@@ -43,7 +43,7 @@ pipeline {
                 stage('SAST Semgrep'){
                     steps{
                         script{
-                            sh 'semgrep --json --exclude "static/" --exclude "tests/"  > semgrep_scan.json || true'
+                            sh 'semgrep --json --exclude "static/" --exclude "tests/"  > semgrep_scan.json || true' 
                             def warningsCount = sh(
                                 script: 'jq -r \'[.results[] | select(.extra.severity == "WARNING")] | length\' semgrep_scan.json',
                                 returnStdout: true
