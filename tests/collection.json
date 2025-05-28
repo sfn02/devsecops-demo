@@ -295,7 +295,7 @@
             }
           ]
         },
-        "method": "POST",
+        "method": "PUT",
         "header": [
           {
             "key": "Accept",
@@ -560,7 +560,7 @@
             }
           ]
         },
-        "method": "GET",
+        "method": "DELETE",
         "header": [
           {
             "key": "Accept",
@@ -621,7 +621,7 @@
   "variable": [
     {
       "key": "Baseurl",
-      "value": "http://www.rendez-vous.test",
+      "value": "http://rendez-vous.test",
       "type": "string"
     }
   ]
