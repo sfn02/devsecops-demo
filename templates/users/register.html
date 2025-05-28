@@ -69,6 +69,15 @@
                             {% endif %}
                         </div>
 
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <input type="password" name="confirm_password" id="confirm_password"
+                                   class="form-control" required>
+                            <div id="password_match_feedback" class="invalid-feedback" style="display: none;">
+                                Passwords do not match.
+                            </div>
+                        </div>
+
                         {% if form.non_field_errors %}
                             <div class="alert alert-danger mt-3">
                                 {% for error in form.non_field_errors %}
@@ -91,4 +100,37 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordField = document.getElementById('password');
+        const confirmPasswordField = document.getElementById('confirm_password');
+        const feedbackDiv = document.getElementById('password_match_feedback');
+
+        function validatePasswordMatch() {
+            if (passwordField.value !== confirmPasswordField.value) {
+                confirmPasswordField.classList.add('is-invalid');
+                feedbackDiv.style.display = 'block';
+                confirmPasswordField.setCustomValidity("Passwords do not match.");
+            } else {
+                confirmPasswordField.classList.remove('is-invalid');
+                feedbackDiv.style.display = 'none';
+                confirmPasswordField.setCustomValidity(""); 
+            }
+        }
+
+        passwordField.addEventListener('input', validatePasswordMatch);
+        confirmPasswordField.addEventListener('input', validatePasswordMatch);
+
+
+        const form = confirmPasswordField.closest('form');
+        form.addEventListener('submit', function(event) {
+            validatePasswordMatch();
+            if (confirmPasswordField.classList.contains('is-invalid')) {
+                event.preventDefault(); 
+            }
+        });
+    });
+</script>
+
 {% endblock content %}
