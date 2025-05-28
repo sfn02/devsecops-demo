@@ -169,6 +169,7 @@ pipeline {
                         sh('cp $ENV_FILE .env')
                         sh(
                         script: """
+                        sudo /setup.sh
                         docker compose -f docker-compose.dev.yaml up -d --build --remove-orphans
                         newman run tests/collection.json \
                         -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \
