@@ -138,8 +138,8 @@ pipeline {
                         }
                     }
                 }
-            } // End of parallel for SAST
-        } // End of SAST parent stage
+            } 
+        } 
 
         stage('Unit tests'){
             environment{
@@ -153,7 +153,8 @@ pipeline {
                         python3 -m venv test_env
                         . ./test_env/bin/activate
                         pip3 install -r requirements-dev.txt
-                        python -m pytest | tee "${LOGDIR}/pytest.log"
+                        python -m pytest --json-report --json-report-summary --json-report-file ${LOGDIR}/pytest-summary.log &
+                        python -m pytest --json-report --json-report-file ./pytest-full-report.json
                         deactivate
                         rm -rf ./test_env
                         """
@@ -189,7 +190,7 @@ pipeline {
     post {
         always {
             echo "Archiving SAST results and cleaning workspace..."
-            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json, pytest.log', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json, pytest-full-report.json', allowEmptyArchive: true
             //sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
             //cleanWs()
         }
