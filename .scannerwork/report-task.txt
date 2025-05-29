@@ -1,6 +1,6 @@
-projectKey=devsecops-demo
+projectKey=DevSecOps-demo-pfe
 serverUrl=http://localhost:9000
 serverVersion=25.3.0.104237
-dashboardUrl=http://localhost:9000/dashboard?id=devsecops-demo
-ceTaskId=3fe77287-9810-4da8-ad6b-fae11777b691
-ceTaskUrl=http://localhost:9000/api/ce/task?id=3fe77287-9810-4da8-ad6b-fae11777b691
+dashboardUrl=http://localhost:9000/dashboard?id=DevSecOps-demo-pfe
+ceTaskId=6ce1bce4-ea01-4b31-bee0-07fdbc563854
+ceTaskUrl=http://localhost:9000/api/ce/task?id=6ce1bce4-ea01-4b31-bee0-07fdbc563854
