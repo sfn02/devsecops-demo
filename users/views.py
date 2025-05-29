@@ -142,6 +142,7 @@ class LoginView(TokenObtainPairView):
                 ,
                 status=status.HTTP_200_OK
                 )
+            response['Location'] = reverse('profile_view')
             response.set_cookie(
                 key='refresh_token',
                 value=refresh,
