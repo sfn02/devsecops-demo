@@ -22,3 +22,4 @@ pytest-cov
 pytest-django
 model_bakery
 pytest-json-report
+bs4
