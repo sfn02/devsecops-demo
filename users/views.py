@@ -229,8 +229,9 @@ class LogoutView(APIView):
         logout(request)
         return response
 
-def root_redirect(request):
-    if request.user.is_authenticated:
-        return redirect('profile_view')
-    else:
-        return redirect('login_view')    
+class root_redirect(APIView):
+    def get(self,request):
+        if request.user.is_authenticated:
+            return redirect('profile_view')
+        else:
+            return redirect('login_view')    
