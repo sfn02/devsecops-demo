@@ -48,3 +48,4 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['user_id'] = user.id
         token['role'] = user.role
         return token
+
