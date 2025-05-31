@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from users.models import Patient,Doctor
+from users.models import Doctor, Patient
 
 class Appointment(models.Model):
     STATUS_CHOICES = [

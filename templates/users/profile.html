@@ -1,7 +1,4 @@
 {% extends "base.html" %}
-
-{% block title %}My Profile{% endblock %}
-
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -31,13 +28,20 @@
                             <label for="last_name" class="form-label">Last Name</label>
                             <input type="text" id="last_name" name="last_name" class="form-control" value="{{ user.last_name }}">
                         </div>
+                        <div class="mb-3">
+                            <label for="cin" class="form-label">CIN</label>
+                            <input type="text" id="cin" name="cin" class="form-control" value="{{ user.cin }}">
+                        </div>
 
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" id="password" name="password" class="form-control" placeholder="Enter new password">
                         </div>
 
-                        <div id="response" class="mb-3"></div>
+
+                        <div id="response">
+                            {% include 'users/partials/_errors.html' %}
+                        </div>
 
                         <div class="d-grid">
                             <button type="submit" class="btn btn-success shadow-sm">Save Changes</button>

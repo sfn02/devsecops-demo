@@ -11,7 +11,8 @@
       "last_name": "Admin",
       "is_staff": true,
       "is_active": true,
-      "role": "admin"
+      "role": "admin",
+      "_cin":"AB123456"
     }
   },
   {
@@ -26,7 +27,8 @@
       "last_name": "Boudan",
       "is_staff": false,
       "is_active": true,
-      "role": "doctor"
+      "role": "doctor",
+      "_cin":"AB123457"
     }
   },
   {
@@ -49,7 +51,8 @@
       "last_name": "Harouil",
       "is_staff": false,
       "is_active": true,
-      "role": "doctor"
+      "role": "doctor",
+      "_cin":"AB123458"
     }
   },
   {
@@ -72,7 +75,8 @@
       "last_name": "rafik",
       "is_staff": false,
       "is_active": true,
-      "role": "doctor"
+      "role": "doctor",
+      "_cin":"AB123459"
     }
   },
   {
@@ -95,7 +99,8 @@
       "last_name": "Lbaz",
       "is_staff": false,
       "is_active": true,
-      "role": "doctor"
+      "role": "doctor",
+      "_cin":"AB123460"
     }
   },
   {
@@ -118,7 +123,8 @@
       "last_name": "chaouqi",
       "is_staff": false,
       "is_active": true,
-      "role": "doctor"
+      "role": "doctor",
+      "_cin":"AB123461"
     }
   },
   {

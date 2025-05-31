@@ -10,17 +10,19 @@
             <div class="card shadow border-0">
                 <div class="card-body p-4">
                     <h2 class="text-center mb-4">Create an Account</h2>
+                    
+                    
                     <form action="{% url 'register_view' %}" method="post" novalidate>
                         {% csrf_token %}
 
                         <div class="mb-3">
                             <label for="first_name" class="form-label">First Name</label>
                             <input type="text" name="first_name" id="first_name"
-                                   class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
-                                   value="{{ form.first_name.value|default_if_none:'' }}" required>
-                            {% if form.first_name.errors %}
+                                   class="form-control {% if serializer_errors.first_name %}is-invalid{% endif %}"
+                                   value="{{ request.POST.first_name|default_if_none:'' }}" required>
+                            {% if serializer_errors.first_name %}
                                 <div class="invalid-feedback">
-                                    {% for error in form.first_name.errors %}
+                                    {% for error in serializer_errors.first_name %}
                                         {{ error }}
                                     {% endfor %}
                                 </div>
@@ -30,11 +32,11 @@
                         <div class="mb-3">
                             <label for="last_name" class="form-label">Last Name</label>
                             <input type="text" name="last_name" id="last_name"
-                                   class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
-                                   value="{{ form.last_name.value|default_if_none:'' }}" required>
-                            {% if form.last_name.errors %}
+                                   class="form-control {% if serializer_errors.last_name %}is-invalid{% endif %}"
+                                   value="{{ request.POST.last_name|default_if_none:'' }}" required>
+                            {% if serializer_errors.last_name %}
                                 <div class="invalid-feedback">
-                                    {% for error in form.last_name.errors %}
+                                    {% for error in serializer_errors.last_name %}
                                         {{ error }}
                                     {% endfor %}
                                 </div>
@@ -44,12 +46,26 @@
                         <div class="mb-3">
                             <label for="email" class="form-label">Email address</label>
                             <input type="email" name="email" id="email"
-                                   class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                                   class="form-control {% if serializer_errors.email %}is-invalid{% endif %}"
                                    placeholder="you@example.com"
-                                   value="{{ form.email.value|default_if_none:'' }}" required>
-                            {% if form.email.errors %}
+                                   value="{{ request.POST.email|default_if_none:'' }}" required>
+                            {% if serializer_errors.email %}
                                 <div class="invalid-feedback">
-                                    {% for error in form.email.errors %}
+                                    {% for error in serializer_errors.email %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="cin" class="form-label">CIN</label>
+                            <input type="text" name="cin" id="cin"
+                                   class="form-control {% if serializer_errors.cin %}is-invalid{% endif %}"
+                                   value="{{ request.POST.cin|default_if_none:'' }}" required>
+                            {% if serializer_errors.cin %}
+                                <div class="invalid-feedback">
+                                    {% for error in serializer_errors.cin %}
                                         {{ error }}
                                     {% endfor %}
                                 </div>
@@ -59,10 +75,10 @@
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" name="password" id="password"
-                                   class="form-control {% if form.password.errors %}is-invalid{% endif %}" required>
-                            {% if form.password.errors %}
+                                   class="form-control {% if serializer_errors.password %}is-invalid{% endif %}" required>
+                            {% if serializer_errors.password %}
                                 <div class="invalid-feedback">
-                                    {% for error in form.password.errors %}
+                                    {% for error in serializer_errors.password %}
                                         {{ error }}
                                     {% endfor %}
                                 </div>
@@ -77,14 +93,18 @@
                                 Passwords do not match.
                             </div>
                         </div>
-
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger mt-3">
-                                {% for error in form.non_field_errors %}
-                                    {{ error }}
+                        {% if serializer_errors %}
+                        <div class="alert alert-danger mb-4">
+                            <ul class="mb-0">
+                                {% for field, errors in serializer_errors.items %}
+                                    {% for error in errors %}
+                                        <li>{{ field|title }}: {{ error }}</li>
+                                    {% endfor %}
                                 {% endfor %}
-                            </div>
-                        {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
 
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">Register</button>
@@ -122,7 +142,6 @@
         passwordField.addEventListener('input', validatePasswordMatch);
         confirmPasswordField.addEventListener('input', validatePasswordMatch);
 
-
         const form = confirmPasswordField.closest('form');
         form.addEventListener('submit', function(event) {
             validatePasswordMatch();
@@ -132,5 +151,4 @@
         });
     });
 </script>
-
 {% endblock content %}

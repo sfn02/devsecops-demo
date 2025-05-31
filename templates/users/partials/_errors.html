@@ -1,0 +1,11 @@
+{% if serializer.errors %}
+<div class="alert alert-danger">
+    <ul class="mb-0">
+        {% for field, errors in serializer.errors.items %}
+            {% for error in errors %}
+                <li><small>{{ field|title }}: {{ error }}</small></li>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
