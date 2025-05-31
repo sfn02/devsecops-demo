@@ -1,39 +1,87 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
-
+from users.models import Patient
+from rest_framework.validators import UniqueValidator
 User = get_user_model()
 
 
 
 class UserSerializer(serializers.ModelSerializer):
+    cin = serializers.CharField(required=True,validators=[
+        UniqueValidator(
+            queryset=User.objects.all(),
+            message="This CIN is already in use"
+        )
+    ])
+    password = serializers.CharField(
+        min_length=8,
+        required=True,
+        write_only=True
+    )
+    confirm_password = serializers.CharField(
+        write_only=True,
+        required=True
+    )
+
     class Meta:
         model = User
-        fields = ['first_name','last_name','email','password']
-        extra_kwargs = {"password":{"write_only":True}}
+        fields = ['first_name', 'last_name', 'email', 'cin', 'password', 'confirm_password', 'role']
+        extra_kwargs = {"role": {"write_only": True, "required": False}}
 
+    def validate(self, data):
+        confirm_password = data.get('confirm_password')
+        if confirm_password:
+            if data['password'] != data['confirm_password']:
+                raise serializers.ValidationError({"password": "Passwords do not match"})
+        return data
 
-class PatientRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    def validate_cin(self, value):
+        import re
+        if not re.match(r'^[A-Z]{1,2}\d{5,6}$', value):
+            raise serializers.ValidationError("Format CIN invalide")
+        return value.upper()
 
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email']
-        extra_kwargs = {'password': {'write_only': True}}
+    def validate_password(self, value):
+        import re
+        password_pattern = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$"
+        if not re.fullmatch(password_pattern, value):
+            raise serializers.ValidationError("Password must contain at least 8 characters, one uppercase, one lowercase, one digit and one special character")
+        return value
 
     def create(self, validated_data):
-        if User.objects.filter(email=validated_data.get('email')).exists():
-            raise IntegrityError('email already exists')
+        validated_data.pop('confirm_password')  # Remove confirm_password before creation
         user = User.objects.create_user(
-            email=validated_data.get('email'),
-            first_name=validated_data.get('first_name'),
-            last_name=validated_data.get('last_name'),
-            password=validated_data.get('password'),
-            role='patient',
-            is_superuser=False,
-            is_staff=False 
+            email=validated_data['email'],
+            password=validated_data['password'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
+            cin=validated_data['cin'],
+            role=validated_data.get('role', 'patient')  # Default role
         )
-        return user 
+        patient = Patient.objects.create(
+            user=user
+        )
+        patient.save()
+        return user
+
+    def update(self, instance, validated_data):
+        if 'password' in validated_data:
+            instance.set_password(validated_data['password'])
+            validated_data.pop('password')
+        
+        if 'confirm_password' in validated_data:
+            validated_data.pop('confirm_password')
+            
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        
+        instance.save()
+        return instance
+
+
+
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:

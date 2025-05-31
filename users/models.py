@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from hashlib import sha256
 
 
 class CustomUserManager(BaseUserManager):
@@ -33,7 +34,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='patient')
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
+    _cin = models.CharField(null=True,default='AB123456',unique=True)
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -41,6 +42,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+
+
+
+
+    @property
+    def cin(self):
+        return f"{self._cin[:2]}****{self._cin[-2:]}"    
+
+    @cin.setter
+    def cin(self,value):
+        self._cin = value
+
 
 class Patient(models.Model):
     user = models.OneToOneField(
