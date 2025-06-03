@@ -235,7 +235,7 @@ pipeline {
                         python3 -m venv test_env
                         . ./test_env/bin/activate
                         pip3 install -r requirements-dev.txt --no-cache-dir
-                        pip install pip-audit
+                        pip3 install pip-audit
                         pip-audit -f json --strict > pip_audit_scan.json || true
                         """
 
