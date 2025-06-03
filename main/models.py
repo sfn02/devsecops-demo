@@ -43,7 +43,7 @@ class Appointment(models.Model):
         self.status = 'confirmed'
         self.save()
 
-    def mark_completed(self):
+    def complete(self):
         self.status = 'completed'
         self.save()
 

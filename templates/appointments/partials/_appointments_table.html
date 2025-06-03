@@ -18,7 +18,7 @@
     </td>
     <td>
         {% if appointment.status == 'scheduled' %}
-            <!-- Confirm -->
+          
             <form method="post"
                   hx-patch="{% url 'appointment_update' appointment.id %}"
                   hx-target="#appointment-{{ appointment.id }}"
@@ -41,7 +41,7 @@
 
 
         {% elif  appointment.status == 'confirmed' %}
-            <!-- Mark as Completed -->
+         
             <form method="post"
                   hx-patch="{% url 'appointment_update' appointment.id %}"
                   hx-target="#appointment-{{ appointment.id }}"

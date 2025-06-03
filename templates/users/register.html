@@ -91,19 +91,7 @@
                                    class="form-control" required>
                             <div id="password_match_feedback" class="invalid-feedback" style="display: none;">
                                 Passwords do not match.
-                            </div>
-                        </div>
-                        {% if serializer_errors %}
-                        <div class="alert alert-danger mb-4">
-                            <ul class="mb-0">
-                                {% for field, errors in serializer_errors.items %}
-                                    {% for error in errors %}
-                                        <li>{{ field|title }}: {{ error }}</li>
-                                    {% endfor %}
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
+                            </div><br>
                     
 
                         <div class="d-grid">
