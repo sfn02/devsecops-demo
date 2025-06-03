@@ -236,7 +236,7 @@ pipeline {
                         . ./test_env/bin/activate
                         pip3 install -r requirements-dev.txt
                         pip install pip-audit
-                        pip-audit --json --strict > pip_audit_scan.json || true
+                        pip-audit -f json --strict > pip_audit_scan.json || true
                         """
 
                         def pipAuditCriticalHighCount = sh(
