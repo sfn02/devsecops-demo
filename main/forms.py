@@ -81,8 +81,8 @@ class AppointmentForm(forms.ModelForm):
                 existing_appointments = Appointment.objects.filter(
                     doctor=doctor,
                     date_scheduled__lt=end_time, 
-                    date_scheduled__gte=start_time - appointment_duration  
-                )
+                    date_scheduled__gte=start_time - appointment_duration,
+                ).exclude(status='cancelled')
 
                 if self.instance and self.instance.pk:
                     existing_appointments = existing_appointments.exclude(pk=self.instance.pk)
