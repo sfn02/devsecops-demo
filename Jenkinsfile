@@ -266,8 +266,8 @@ pipeline {
         always {
             echo "Archiving SAST results and cleaning workspace..."
             archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json, zap-report.html, pytest-full-report.json ,zap_scan.json, trivy_scan.json, gitleaks_scan.json', allowEmptyArchive: true
-            //sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
-            //cleanWs()
+            sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
+            cleanWs()
         }
         success{
             echo "Build ${env.BUILD_NUMBER} successfully built"
