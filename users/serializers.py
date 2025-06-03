@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
     cin = serializers.CharField(required=True)
     password = serializers.CharField(
         min_length=8,
-        required=True,
+        required=False,
         write_only=True
     )
     confirm_password = serializers.CharField(
@@ -21,7 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'cin', 'password', 'confirm_password', 'role']
+        fields = ['id','first_name', 'last_name', 'email','phone_number','cin', 'password', 'confirm_password', 'role']
         extra_kwargs = {"role": {"write_only": True, "required": False}}
 
     def validate(self, data):

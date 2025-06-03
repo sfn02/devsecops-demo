@@ -9,8 +9,8 @@ class CustomMiddleWare:
         remote_addr = request.META.get('REMOTE_ADDR')
         remote_addr = AnonymizeIP(remote_addr)[:16]
         requested_path = request.path
-        print(f"user {request.user} requested {requested_path} from {remote_addr}")
         if requested_path in ['/admin/','/admin'] and remote_addr == '127.0.0.1':
+            
             return HttpResponseBadRequest()
 
         response = self.get_response(request)

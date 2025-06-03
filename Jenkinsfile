@@ -245,7 +245,7 @@ pipeline {
                         ).trim().toInteger()
 
 
-                        echo "pip-audit Scan Summary: ${pipAuditCriticalHighCount} Critical/High findings, ${pipAuditMediumCount} Medium findings."
+                        echo "pip-audit Scan Summary: ${pipAuditCount}  findings."
 
                         if (pipAuditCount > 0 ) {
                             sh """
@@ -256,8 +256,7 @@ pipeline {
                                 build_number: "${env.BUILD_NUMBER}",
                                 dependency: .dependency.name,
                                 version: .dependency.version,
-                                vulnerability_id: .id,
-                                severity: .severity,
+                                vulnerability_id: .vulns[],
                                 description: .description,
                                 fix_versions: .fix_versions
                                 }' pip_audit_scan.json | tee ${LOGDIR}/pip_audit.log

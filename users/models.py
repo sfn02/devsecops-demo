@@ -35,6 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     _cin = models.CharField(null=True,default='AB123456',unique=True)
+    phone_number = models.CharField(max_length=12, null=True, blank=True, default='212611223344')
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -60,7 +61,7 @@ class Patient(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
-
+    
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
     def clean(self):
