@@ -236,7 +236,7 @@ pipeline {
                         . ./test_env/bin/activate
                         python -m pip install -r requirements-dev.txt 
                         python -m pip install pip-audit
-                        pip-audit -f json --strict -r requirements-dev.txt > pip_audit_scan.json || true
+                        pip-audit -f json --strict  > pip_audit_scan.json || true
                         deactivate
                         """
 
@@ -319,8 +319,8 @@ pipeline {
                         jq -c '.values[] | select(.key == "results")' env.json > newman_results.json \
                         cat newman_results.json | tee ${LOGDIR}/newman.log
 
-                        newman run tests/collection.json \
-                        -e tests/access_control_check.json --env-var "BaseUrl=http://rendez-vous.test" \
+                        newman run tests/access_control_check.json \
+                        -e  tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \
                         --delay-request 1000 --timeout-request 3000 \
                         --export-environment env.json
                         jq -c '.values[] | select(.key == "results")' env.json > newman_ac_results.json \
