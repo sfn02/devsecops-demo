@@ -499,7 +499,7 @@
 					"script": {
 						"exec": [
 							"let users = JSON.parse(pm.environment.get('users'))",
-							"let user = users[0]",
+							"let user = users[3]",
 							"let json_raw = {",
 							"    \"email\":user.email,",
 							"    \"password\":user.password",
