@@ -234,8 +234,8 @@ pipeline {
                         sh """
                         python3 -m venv test_env
                         . ./test_env/bin/activate
-                        python -m pip install -r requirements-dev.txt --no-cache-dir
-                        python -m install pip-audit
+                        python -m pip install -r requirements-dev.txt 
+                        python -m pip install pip-audit
                         pip-audit -f json --strict -r requirements-dev.txt > pip_audit_scan.json || true
                         """
 
