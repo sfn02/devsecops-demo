@@ -237,6 +237,7 @@ pipeline {
                         python -m pip install -r requirements-dev.txt 
                         python -m pip install pip-audit
                         pip-audit -f json --strict -r requirements-dev.txt > pip_audit_scan.json || true
+                        deactivate
                         """
 
                         def pipAuditCount = sh(
@@ -266,6 +267,7 @@ pipeline {
                         }
                         
                         sh """
+                        . test_env/bin/activate
                         python -m pytest --json-report --json-report-summary --json-report-file ${LOGDIR}/pytest-summary.log &
                         python -m pytest --json-report --json-report-file ./pytest-full-report.json
                         deactivate
