@@ -312,9 +312,18 @@ pipeline {
                         sleep 10
                         newman run tests/collection.json \
                         -e tests/environment.json --env-var "BaseUrl=http://rendez-vous.test" \
-                        --env-var "skip_registration=false" \
                         --delay-request 1000 --timeout-request 3000 \
                         --export-environment env.json
+                        jq -c '.values[] | select(.key == "results")' env.json > newman_results.json \
+                        cat newman_results.json | tee ${LOGDIR}/newman.log
+
+                        newman run tests/collection.json \
+                        -e tests/access_control_check.json --env-var "BaseUrl=http://rendez-vous.test" \
+                        --delay-request 1000 --timeout-request 3000 \
+                        --export-environment env.json
+                        jq -c '.values[] | select(.key == "results")' env.json > newman_ac_results.json \
+                        cat newman_results.json | tee ${LOGDIR}/newman_ac.log
+
                         """
                     }
                 }
@@ -373,7 +382,9 @@ pipeline {
     post {
         always {
             echo "Archiving scan results and cleaning workspace..."
-            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json, zap-report.html, pytest-full-report.json, zap_scan.json, trivy_scan.json, gitleaks_scan.json, pip_audit_scan.json, trivy_iac_scan.json', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json, zap-report.html, 
+            pytest-full-report.json, zap_scan.json, trivy_scan.json, gitleaks_scan.json, 
+            pip_audit_scan.json, trivy_iac_scan.json,newman_results, newman_ac_results', allowEmptyArchive: true
             sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
             cleanWs()
         }
