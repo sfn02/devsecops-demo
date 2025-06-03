@@ -239,15 +239,11 @@ pipeline {
                         pip-audit -f json --strict > pip_audit_scan.json || true
                         """
 
-                        def pipAuditCriticalHighCount = sh(
-                            script: 'jq -r \'[.vulnerabilities[] | select(.severity == "Critical" or .severity == "High")] | length\' pip_audit_scan.json',
+                        def pipAuditCount = sh(
+                            script: 'jq \'[.dependencies[] | select(.vulns[] != null)] | length\' pip_audit_scan.json',
                             returnStdout: true
                         ).trim().toInteger()
 
-                        def pipAuditMediumCount = sh(
-                            script: 'jq -r \'[.vulnerabilities[] | select(.severity == "Medium")] | length\' pip_audit_scan.json',
-                            returnStdout: true
-                        ).trim().toInteger()
 
                         echo "pip-audit Scan Summary: ${pipAuditCriticalHighCount} Critical/High findings, ${pipAuditMediumCount} Medium findings."
 
