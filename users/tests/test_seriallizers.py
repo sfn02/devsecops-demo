@@ -31,7 +31,7 @@ def test_users_group():
     users = User.objects.all()
     serializer = UserSerializer(instance=users,many=True)
     assert len(serializer.data) == User.objects.count()
-    
+
 
 @pytest.mark.django_db
 def test_user_cin_anonymization(user_instance):
@@ -39,4 +39,4 @@ def test_user_cin_anonymization(user_instance):
     user = user_instance
     serializer = UserSerializer(instance=user)
     assert serializer.data.get('cin') == user.cin
-    assert serializer.data.get('cin')[2:-2] == '****' # AA123456 -> AA****56
+    assert serializer.data.get('cin')[2:-2] == '****' # AA123456 --> AA****56
