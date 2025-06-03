@@ -10,20 +10,22 @@ pipeline {
     }
 
     triggers {
-        githubPush()
+        pollSCM('H/5 * * * *')  // Changed from githubPush() to pollSCM
     }
+
     environment {
-        LOGDIR="/security/logs/build-${env.BUILD_NUMBER}"
+        LOGDIR = "/security/logs/build-${env.BUILD_NUMBER}"
         // Initialize the deployment flag to true. It will be set to "false" by any failing security gate.
         DEPLOY_ALLOWED = "true" 
     }
 
     stages {
-        stage('Preparing Log directory'){
-            steps{
+        stage('Preparing Log directory') {
+            steps {
                 sh "mkdir -p ${LOGDIR}"
             }
         }
+
         stage('Checkout Code') {
             steps {
                 checkout([
@@ -40,18 +42,18 @@ pipeline {
             }
         }
 
-        stage('Secrets Scanning'){
-            parallel{
-                stage('Secrets Scanning - Trivy'){
-                    steps{
-                        script{
+        stage('Secrets Scanning') {
+            parallel {
+                stage('Secrets Scanning - Trivy') {
+                    steps {
+                        script {
                             sh '/security/trivy/trivy fs --scanners secret --secret-config trivy-secret.yaml \
                             --skip-dirs static,tests,*/migrations \
                             -f json . | tee trivy_scan.json'
                             
                             // Log Trivy secrets in a structured format
                             sh """
-                                jq  -c '                                                                                                           
+                                jq -c '                                                                                                           
                                   .Results[] | .Secrets[] |
                                   {
                                     tool: "trivy",
@@ -82,9 +84,9 @@ pipeline {
                         }
                     }
                 }
-                stage('Secrets Scanning - Gitleaks'){
-                    steps{
-                        script{
+                stage('Secrets Scanning - Gitleaks') {
+                    steps {
+                        script {
                             sh 'gitleaks detect . -v -f json -r gitleaks_scan.json'
                             
                             // Log Gitleaks findings in a structured format
@@ -106,7 +108,7 @@ pipeline {
                             
                             // Gitleaks Security Gate: Check for any leaks
                             def gitleaksFindingsCount = sh(
-                                script: 'jq -r \'. | length\' gitleaks_scan.json', // Corrected jq for array length
+                                script: 'jq -r \'. | length\' gitleaks_scan.json',
                                 returnStdout: true
                             ).trim().toInteger()
 
@@ -122,12 +124,12 @@ pipeline {
             }
         }
 
-        stage('SAST'){
-            parallel{
-                stage('SAST Semgrep'){
-                    steps{
-                        script{
-                            sh 'semgrep --json --exclude "static/" --exclude "tests/"  > semgrep_scan.json || true' 
+        stage('SAST') {
+            parallel {
+                stage('SAST Semgrep') {
+                    steps {
+                        script {
+                            sh(script: 'semgrep --json --exclude "static/" --exclude "tests/" > semgrep_scan.json', returnStatus: true)
                             def warningsCount = sh(
                                 script: 'jq -r \'[.results[] | select(.extra.severity == "WARNING")] | length\' semgrep_scan.json',
                                 returnStdout: true
@@ -159,17 +161,16 @@ pipeline {
                             }
 
                             // Semgrep Security Gate
-                            if (errorCriticalCount > 0){
+                            if (errorCriticalCount > 0) {
                                 echo "SECURITY GATE FAILED: Semgrep detected ${errorCriticalCount} ERROR/CRITICAL findings. Deployment will be blocked."
-                                env.DEPLOY_ALLOWED = "false" // Set flag to false
+                                env.DEPLOY_ALLOWED = "false"
                             }
                             def maxAllowedSemgrepWarnings = 0
-                            if (warningsCount > maxAllowedSemgrepWarnings){
+                            if (warningsCount > maxAllowedSemgrepWarnings) {
                                 echo "QUALITY GATE FAILED: Semgrep detected ${warningsCount} WARNINGs, exceeding threshold of ${maxAllowedSemgrepWarnings}. Deployment will be blocked."
-                                env.DEPLOY_ALLOWED = "false" // Set flag to false
+                                env.DEPLOY_ALLOWED = "false"
                             }
-                            // Only echo "passed" if no gate has failed within this stage
-                            if (env.DEPLOY_ALLOWED == "true") { // Check global flag
+                            if (env.DEPLOY_ALLOWED == "true") {
                                 echo "Semgrep analysis passed all defined quality gates."
                             }
                         }
@@ -179,9 +180,7 @@ pipeline {
                     steps {
                         script {
                             echo "--- Running Bandit SAST Scan ---"
-                            sh """
-                                bandit -r . -f json --exclude "static/" --exclude "*/tests/" > bandit_scan.json || true
-                            """
+                            sh(script: 'bandit -r . -f json --exclude "static/" --exclude "*/tests/" > bandit_scan.json', returnStatus: true)
 
                             def highSeverityCount = sh(
                                 script: 'jq -r \'[.results[] | select(.issue_severity == "HIGH")] | length\' bandit_scan.json',
@@ -220,15 +219,14 @@ pipeline {
                             // Bandit Security Gate
                             if (highSeverityCount > 0) {
                                 echo "SECURITY GATE FAILED: Bandit detected ${highSeverityCount} HIGH severity findings. Deployment will be blocked."
-                                env.DEPLOY_ALLOWED = "false" // Set flag to false
+                                env.DEPLOY_ALLOWED = "false"
                             }
                             def maxAllowedBanditMedium = 5
                             if (mediumSeverityCount > maxAllowedBanditMedium) {
                                 echo "QUALITY GATE FAILED: Bandit detected ${mediumSeverityCount} MEDIUM severity findings, exceeding threshold of ${maxAllowedBanditMedium}. Deployment will be blocked."
-                                env.DEPLOY_ALLOWED = "false" // Set flag to false
+                                env.DEPLOY_ALLOWED = "false"
                             }
-                            // Only echo "passed" if no gate has failed within this stage
-                            if (env.DEPLOY_ALLOWED == "true") { // Check global flag
+                            if (env.DEPLOY_ALLOWED == "true") {
                                 echo "Bandit analysis passed all defined quality gates."
                             }
                         }
@@ -237,13 +235,13 @@ pipeline {
             } 
         } 
 
-        stage('Unit tests & SCA'){ // Renamed stage to reflect SCA integration
-            environment{
-                DJANGO_SETTINGS_MODULE='RendezVous.settings.dev'
+        stage('Unit tests & SCA') {
+            environment {
+                DJANGO_SETTINGS_MODULE = 'RendezVous.settings.dev'
             }
-            steps{
+            steps {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
-                    script{
+                    script {
                         sh('cp $ENV_FILE .env')
                         sh """
                         python3 -m venv test_env
@@ -293,12 +291,11 @@ pipeline {
                             echo "SECURITY GATE FAILED: pip-audit detected ${pipAuditCriticalHighCount} Critical/High severity findings. Deployment will be blocked."
                             env.DEPLOY_ALLOWED = "false"
                         }
-                        def maxAllowedPipAuditMedium = 0 // Set your threshold for Medium severity findings
+                        def maxAllowedPipAuditMedium = 0
                         if (pipAuditMediumCount > maxAllowedPipAuditMedium) {
                             echo "QUALITY GATE FAILED: pip-audit detected ${pipAuditMediumCount} Medium severity findings, exceeding threshold of ${maxAllowedPipAuditMedium}. Deployment will be blocked."
                             env.DEPLOY_ALLOWED = "false"
                         }
-                        // Only echo "passed" if no gate has failed
                         if (env.DEPLOY_ALLOWED == "true") {
                             echo "pip-audit analysis passed all defined quality gates."
                         }
@@ -314,13 +311,14 @@ pipeline {
                 }
             }
         }
-        stage('IaC Scanning'){
-            steps{
+
+        stage('IaC Scanning') {
+            steps {
                 echo 'Running trivy scan against dockerfiles...'
                 sh """
                     /security/trivy/trivy config --severity HIGH,CRITICAL \
                     --file-patterns 'dockerfile:dockerfile' . \
-                    -f json > trivy_iac_scan.json || true // Changed output file name to avoid conflict
+                    -f json > trivy_iac_scan.json || true
                     cat trivy_iac_scan.json | tee ${LOGDIR}/trivy_iac_scan.log
                 """
                 // Trivy IaC Security Gate
@@ -341,10 +339,9 @@ pipeline {
         stage('Build & Integration tests') {
             steps {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
-                    script{
+                    script {
                         sh('cp $ENV_FILE .env')
-                        sh(
-                        script: """
+                        sh """
                         sudo /setup.sh
                         docker compose -f docker-compose.dev.yaml build --no-cache
                         docker compose -f docker-compose.dev.yaml up -d --wait
@@ -355,14 +352,13 @@ pipeline {
                         --delay-request 1000 --timeout-request 3000 \
                         --export-environment env.json
                         """
-
-                        )
                     }
                 }
             }
         }
-        stage('DAST - owasp ZAP'){
-            steps{
+
+        stage('DAST - owasp ZAP') {
+            steps {
                 sh """
                     docker run -u root --network devsecops-demo_dev_network \
                     -v /opt/devsecops/reports:/zap/wrk:rw \
@@ -371,9 +367,6 @@ pipeline {
                     cat zap_scan.json | tee ${LOGDIR}/zap_scan.log
                 """
                 // ZAP DAST Security Gate
-                // Note: ZAP's JSON output structure can vary.
-                // This jq assumes alerts are directly under .site[0].alerts.
-                // Riskcode mapping: 3=High, 2=Medium, 1=Low, 0=Informational
                 def zapHighAlertsCount = sh(
                     script: 'jq -r \'[.site[0].alerts[] | select(.riskcode == "3")] | length\' zap_scan.json',
                     returnStdout: true
@@ -389,31 +382,23 @@ pipeline {
                     echo "SECURITY GATE FAILED: ZAP DAST detected ${zapHighAlertsCount} High severity alerts. Deployment will be blocked."
                     env.DEPLOY_ALLOWED = "false"
                 }
-                def maxAllowedZapMedium = 0 // Set your threshold for Medium severity ZAP alerts
+                def maxAllowedZapMedium = 0
                 if (zapMediumAlertsCount > maxAllowedZapMedium) {
                     echo "QUALITY GATE FAILED: ZAP DAST detected ${zapMediumAlertsCount} Medium severity alerts, exceeding threshold of ${maxAllowedZapMedium}. Deployment will be blocked."
                     env.DEPLOY_ALLOWED = "false"
                 }
-                // Only echo "passed" if no gate has failed
                 if (env.DEPLOY_ALLOWED == "true") {
                     echo "ZAP DAST analysis passed all defined quality gates."
                 }
             } 
         }
         
-        // This stage should be placed directly before any actual deployment steps.
         stage('Deployment Security Gate') {
             steps {
                 script {
                     if (env.DEPLOY_ALLOWED == "true") {
                         echo "All security gates passed. Proceeding with deployment."
-                        // You would typically add your actual deployment steps here,
-                        // or trigger another deployment pipeline.
-                        // For example:
-                        // sh 'kubectl apply -f deployment.yaml'
-                        // build job: 'your-deployment-job', parameters: [string(name: 'BUILD_NUMBER', value: env.BUILD_NUMBER)]
                     } else {
-                        // If DEPLOY_ALLOWED is false, fail the pipeline
                         error "Deployment blocked due to security findings. Review previous scan stages for details in logs."
                     }
                 }
@@ -424,12 +409,11 @@ pipeline {
     post {
         always {
             echo "Archiving scan results and cleaning workspace..."
-            // Ensure all scan JSONs are archived
             archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json, zap-report.html, pytest-full-report.json, zap_scan.json, trivy_scan.json, gitleaks_scan.json, pip_audit_scan.json, trivy_iac_scan.json', allowEmptyArchive: true
             sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
             cleanWs()
         }
-        success{
+        success {
             echo "Build ${env.BUILD_NUMBER} successfully built and passed all gates."
         }
         failure {
