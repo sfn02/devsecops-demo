@@ -237,7 +237,6 @@ pipeline {
                         pip3 install -r requirements-dev.txt --no-cache-dir
                         pip3 install pip-audit
                         pip-audit -f json --strict -r requirements-dev.txt > pip_audit_scan.json || true
-                        #deactivate
                         """
 
                         def pipAuditCount = sh(
@@ -267,11 +266,8 @@ pipeline {
                         }
                         
                         sh """
-                        #python3 -m venv test_env
-                        #. test_env/bin/activate
-                        #pip3 install -r requirements-dev.txt
-                        python3 -m pytest --json-report --json-report-summary --json-report-file ${LOGDIR}/pytest-summary.log &
-                        python3 -m pytest --json-report --json-report-file ./pytest-full-report.json
+                        pytest --json-report --json-report-summary --json-report-file ${LOGDIR}/pytest-summary.log &
+                        pytest --json-report --json-report-file ./pytest-full-report.json
                         deactivate
                         rm -rf ./test_env
                         """
