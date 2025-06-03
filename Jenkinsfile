@@ -10,11 +10,10 @@ pipeline {
     }
 
     triggers {
-        pollSCM('H/5 * * * *')  // Changed from githubPush() to pollSCM
+        githubPush()
     }
-
     environment {
-        LOGDIR = "/security/logs/build-${env.BUILD_NUMBER}"
+        LOGDIR="/security/logs/build-${env.BUILD_NUMBER}"
         // Initialize the deployment flag to true. It will be set to "false" by any failing security gate.
         DEPLOY_ALLOWED = "true" 
     }
@@ -51,7 +50,6 @@ pipeline {
                             --skip-dirs static,tests,*/migrations \
                             -f json . | tee trivy_scan.json'
                             
-                            // Log Trivy secrets in a structured format
                             sh """
                                 jq -c '                                                                                                           
                                   .Results[] | .Secrets[] |
@@ -69,7 +67,6 @@ pipeline {
                                   tee ${LOGDIR}/trivy_scan.log
                             """
                             
-                            // Trivy Security Gate: Check for Critical/High secrets
                             def trivyCriticalHighCount = sh(
                                 script: 'jq -r \'[.Results[] | .Secrets[] | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length\' trivy_scan.json',
                                 returnStdout: true
@@ -89,7 +86,6 @@ pipeline {
                         script {
                             sh 'gitleaks detect . -v -f json -r gitleaks_scan.json'
                             
-                            // Log Gitleaks findings in a structured format
                             sh """
                                 jq -c '
                                     .[] | 
@@ -100,13 +96,12 @@ pipeline {
                                     Path: .File,           
                                     start_line: .StartLine, 
                                     end_line: .EndLine,     
-                                    severity: "UNKNOWN",    // Gitleaks does not provide severity directly in this output
+                                    severity: "UNKNOWN",
                                     description: .Description,
                                     match: .Match      
                                   }' gitleaks_scan.json | tee ${LOGDIR}/gitleaks_scan.log
                             """
                             
-                            // Gitleaks Security Gate: Check for any leaks
                             def gitleaksFindingsCount = sh(
                                 script: 'jq -r \'. | length\' gitleaks_scan.json',
                                 returnStdout: true
@@ -156,11 +151,8 @@ pipeline {
                                         cwe: .extra.metadata.cwe
                                         }' semgrep_scan.json | tee ${LOGDIR}/semgrep.log"""
                                 echo "Detailed Semgrep findings logged to ${LOGDIR}/semgrep.log"
-                            } else {
-                                echo "No significant Semgrep findings (WARNING, ERROR, CRITICAL) to log in detail."
                             }
 
-                            // Semgrep Security Gate
                             if (errorCriticalCount > 0) {
                                 echo "SECURITY GATE FAILED: Semgrep detected ${errorCriticalCount} ERROR/CRITICAL findings. Deployment will be blocked."
                                 env.DEPLOY_ALLOWED = "false"
@@ -179,7 +171,6 @@ pipeline {
                 stage('SAST Bandit') {
                     steps {
                         script {
-                            echo "--- Running Bandit SAST Scan ---"
                             sh(script: 'bandit -r . -f json --exclude "static/" --exclude "*/tests/" > bandit_scan.json', returnStatus: true)
 
                             def highSeverityCount = sh(
@@ -212,11 +203,8 @@ pipeline {
                                     ' bandit_scan.json | tee ${LOGDIR}/bandit.log
                                 """
                                 echo "Detailed Bandit findings logged to ${LOGDIR}/bandit.log"
-                            } else {
-                                echo "No Bandit findings (HIGH, MEDIUM) to log in detail."
                             }
 
-                            // Bandit Security Gate
                             if (highSeverityCount > 0) {
                                 echo "SECURITY GATE FAILED: Bandit detected ${highSeverityCount} HIGH severity findings. Deployment will be blocked."
                                 env.DEPLOY_ALLOWED = "false"
@@ -247,10 +235,7 @@ pipeline {
                         python3 -m venv test_env
                         . ./test_env/bin/activate
                         pip3 install -r requirements-dev.txt
-                        
                         pip install pip-audit
-
-                        echo "--- Running pip-audit (SCA) Scan ---"
                         pip-audit --json --strict > pip_audit_scan.json || true
                         """
 
@@ -268,25 +253,21 @@ pipeline {
 
                         if (pipAuditCriticalHighCount > 0 || pipAuditMediumCount > 0) {
                             sh """
-                                    jq -c '
-                                    .vulnerabilities[] | {
-                                    tool: "pip-audit",
-                                    pipeline_job: "${env.JOB_NAME}",
-                                    build_number: "${env.BUILD_NUMBER}",
-                                    dependency: .dependency.name,
-                                    version: .dependency.version,
-                                    vulnerability_id: .id,
-                                    severity: .severity,
-                                    description: .description,
-                                    fix_versions: .fix_versions
-                                    }' pip_audit_scan.json | tee ${LOGDIR}/pip_audit.log
-                                """
-                            echo "Detailed pip-audit findings logged to ${LOGDIR}/pip_audit.log"
-                        } else {
-                            echo "No significant pip-audit findings (Critical, High, Medium) to log in detail."
+                                jq -c '
+                                .vulnerabilities[] | {
+                                tool: "pip-audit",
+                                pipeline_job: "${env.JOB_NAME}",
+                                build_number: "${env.BUILD_NUMBER}",
+                                dependency: .dependency.name,
+                                version: .dependency.version,
+                                vulnerability_id: .id,
+                                severity: .severity,
+                                description: .description,
+                                fix_versions: .fix_versions
+                                }' pip_audit_scan.json | tee ${LOGDIR}/pip_audit.log
+                            """
                         }
 
-                        // pip-audit Security Gate
                         if (pipAuditCriticalHighCount > 0) {
                             echo "SECURITY GATE FAILED: pip-audit detected ${pipAuditCriticalHighCount} Critical/High severity findings. Deployment will be blocked."
                             env.DEPLOY_ALLOWED = "false"
@@ -296,14 +277,10 @@ pipeline {
                             echo "QUALITY GATE FAILED: pip-audit detected ${pipAuditMediumCount} Medium severity findings, exceeding threshold of ${maxAllowedPipAuditMedium}. Deployment will be blocked."
                             env.DEPLOY_ALLOWED = "false"
                         }
-                        if (env.DEPLOY_ALLOWED == "true") {
-                            echo "pip-audit analysis passed all defined quality gates."
-                        }
+                        
                         sh """
-                        # --- Original pytest commands ---
                         python -m pytest --json-report --json-report-summary --json-report-file ${LOGDIR}/pytest-summary.log &
                         python -m pytest --json-report --json-report-file ./pytest-full-report.json
-                        
                         deactivate
                         rm -rf ./test_env
                         """
@@ -314,24 +291,24 @@ pipeline {
 
         stage('IaC Scanning') {
             steps {
-                echo 'Running trivy scan against dockerfiles...'
-                sh """
-                    /security/trivy/trivy config --severity HIGH,CRITICAL \
-                    --file-patterns 'dockerfile:dockerfile' . \
-                    -f json > trivy_iac_scan.json || true
-                    cat trivy_iac_scan.json | tee ${LOGDIR}/trivy_iac_scan.log
-                """
-                // Trivy IaC Security Gate
-                def trivyIacCriticalHighCount = sh(
-                    script: 'jq -r \'[.Results[] | .Misconfigurations[] | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length\' trivy_iac_scan.json',
-                    returnStdout: true
-                ).trim().toInteger()
+                script {
+                    echo 'Running trivy scan against dockerfiles...'
+                    sh """
+                        /security/trivy/trivy config --severity HIGH,CRITICAL \
+                        --file-patterns 'dockerfile:dockerfile' . \
+                        -f json > trivy_iac_scan.json || true
+                        cat trivy_iac_scan.json | tee ${LOGDIR}/trivy_iac_scan.log
+                    """
+                    
+                    def trivyIacCriticalHighCount = sh(
+                        script: 'jq -r \'[.Results[] | .Misconfigurations[] | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length\' trivy_iac_scan.json',
+                        returnStdout: true
+                    ).trim().toInteger()
 
-                if (trivyIacCriticalHighCount > 0) {
-                    echo "SECURITY GATE FAILED: Trivy IaC scan detected ${trivyIacCriticalHighCount} Critical/High misconfigurations. Deployment will be blocked."
-                    env.DEPLOY_ALLOWED = "false"
-                } else {
-                    echo "Trivy IaC scan passed security gate."
+                    if (trivyIacCriticalHighCount > 0) {
+                        echo "SECURITY GATE FAILED: Trivy IaC scan detected ${trivyIacCriticalHighCount} Critical/High misconfigurations. Deployment will be blocked."
+                        env.DEPLOY_ALLOWED = "false"
+                    }
                 }
             }
         }
@@ -359,38 +336,38 @@ pipeline {
 
         stage('DAST - owasp ZAP') {
             steps {
-                sh """
-                    docker run -u root --network devsecops-demo_dev_network \
-                    -v /opt/devsecops/reports:/zap/wrk:rw \
-                    zaproxy/zap-weekly zap-baseline.py -t http://nginx \
-                    -J zap_scan.json -r zap-report.html || true
-                    cat zap_scan.json | tee ${LOGDIR}/zap_scan.log
-                """
-                // ZAP DAST Security Gate
-                def zapHighAlertsCount = sh(
-                    script: 'jq -r \'[.site[0].alerts[] | select(.riskcode == "3")] | length\' zap_scan.json',
-                    returnStdout: true
-                ).trim().toInteger()
-                def zapMediumAlertsCount = sh(
-                    script: 'jq -r \'[.site[0].alerts[] | select(.riskcode == "2")] | length\' zap_scan.json',
-                    returnStdout: true
-                ).trim().toInteger()
+                script {
+                    sh """
+                        docker run -u root --network devsecops-demo_dev_network \
+                        -v /opt/devsecops/reports:/zap/wrk:rw \
+                        zaproxy/zap-weekly zap-baseline.py -t http://nginx \
+                        -J zap_scan.json -r zap-report.html || true
+                        cat zap_scan.json | tee ${LOGDIR}/zap_scan.log
+                    """
+                    
+                    def zapHighAlertsCount = sh(
+                        script: "jq -r '[.site[0].alerts[] | select(.riskcode == \"3\")] | length' zap_scan.json",
+                        returnStdout: true
+                    ).trim().toInteger()
+                    
+                    def zapMediumAlertsCount = sh(
+                        script: 'jq -r \'[.site[0].alerts[] | select(.riskcode == "2")] | length\' zap_scan.json',
+                        returnStdout: true
+                    ).trim().toInteger()
 
-                echo "ZAP DAST Scan Summary: ${zapHighAlertsCount} High severity alerts, ${zapMediumAlertsCount} Medium severity alerts."
+                    echo "ZAP DAST Scan Summary: ${zapHighAlertsCount} High severity alerts, ${zapMediumAlertsCount} Medium severity alerts."
 
-                if (zapHighAlertsCount > 0) {
-                    echo "SECURITY GATE FAILED: ZAP DAST detected ${zapHighAlertsCount} High severity alerts. Deployment will be blocked."
-                    env.DEPLOY_ALLOWED = "false"
+                    if (zapHighAlertsCount > 0) {
+                        echo "SECURITY GATE FAILED: ZAP DAST detected ${zapHighAlertsCount} High severity alerts. Deployment will be blocked."
+                        env.DEPLOY_ALLOWED = "false"
+                    }
+                    def maxAllowedZapMedium = 0
+                    if (zapMediumAlertsCount > maxAllowedZapMedium) {
+                        echo "QUALITY GATE FAILED: ZAP DAST detected ${zapMediumAlertsCount} Medium severity alerts, exceeding threshold of ${maxAllowedZapMedium}. Deployment will be blocked."
+                        env.DEPLOY_ALLOWED = "false"
+                    }
                 }
-                def maxAllowedZapMedium = 0
-                if (zapMediumAlertsCount > maxAllowedZapMedium) {
-                    echo "QUALITY GATE FAILED: ZAP DAST detected ${zapMediumAlertsCount} Medium severity alerts, exceeding threshold of ${maxAllowedZapMedium}. Deployment will be blocked."
-                    env.DEPLOY_ALLOWED = "false"
-                }
-                if (env.DEPLOY_ALLOWED == "true") {
-                    echo "ZAP DAST analysis passed all defined quality gates."
-                }
-            } 
+            }
         }
         
         stage('Deployment Security Gate') {
