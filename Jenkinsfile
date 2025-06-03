@@ -38,6 +38,59 @@ pipeline {
             }
         }
 
+        stage('Secrets Scanning'){
+            parallel{
+                stage('Secrets Scanning - Trivy'){
+                    steps{
+                        script{
+                            sh '/security/trivy/trivy fs --secret-config trivy-secret.yaml \
+                            --skip-dirs static,tests,*/migrations \
+                            -f json . | tee trivy_scan.json'
+                            sh """
+                                jq  -c '                                                                                                           
+                                  .Results[] | .Secrets[] |
+                                  {
+                                    tool: "trivy",
+                                    pipeline_job: "${env.JOB_NAME}",
+                                    build_number: "${env.BUILD_NUMBER}",
+                                    Path: .Target, 
+                                    start_line: .StartLine,  
+                                    end_line: .EndLine,
+                                    severity: .Severity,
+                                    description: .Title,
+                                    match: .Match
+                                  }' trivy_scan.json | \
+                                  tee ${LOGDIR}/trivy_scan.log
+                            """
+                        }
+                    }
+                }
+                stage('Secrets Scanning - Gitleaks'){
+                    steps{
+                        script{
+                            sh 'gitleaks detect . -v -f json -r gitleaks_scan.json'
+                            sh """
+                                jq -c '
+                                    .[] | 
+                                  {
+                                    tool: "gitleaks",
+                                    pipeline_job: "${env.JOB_NAME}",
+                                    build_number: "${env.BUILD_NUMBER}", 
+                                    Path: .File,           
+                                    start_line: .StartLine, 
+                                    end_line: .EndLine,     
+                                    severity: "UNKNOWN",    
+                                    description: .Description,
+                                    match: .Match      
+                                  }' gitleaks_scan.json | tee ${LOGDIR}/gitleaks_scan.log
+                                
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
         stage('SAST'){
             parallel{
                 stage('SAST Semgrep'){
@@ -162,7 +215,18 @@ pipeline {
                 }
             }
         }
-
+        stage('IaC Scanning'){
+            steps{
+                echo 'Running trivy scan against dockerfiles...'
+                sh """
+                    /security/trivy/trivy config --severity HIGH,CRITICAL \
+                    --file-patterns 'dockerfile:dockerfile' . \
+                    -f json > trivy_scan.json || true
+                    cat trivy_scan.json | tee ${LOGDIR}/trivy_scan.log
+                
+                """
+            }
+        }
         stage('Build & Integration tests') {
             steps {
                 withCredentials([file(credentialsId: 'env_file_dev', variable: 'ENV_FILE')]) {
@@ -185,12 +249,23 @@ pipeline {
                 }
             }
         }
+        stage('DAST - owasp ZAP'){
+            steps{
+                sh """
+                    docker run -u root --network devsecops-demo_dev_network \
+                    -v /opt/devsecops/reports:/zap/wrk:rw \
+                    zaproxy/zap-weekly zap-baseline.py -t http://nginx \
+                    -J zap_scan.json -r zap-report.html || true
+                    cat zap_scan.json | tee ${LOGDIR}/zap_scan.log
+                """
+            } 
+        }
     } 
 
     post {
         always {
             echo "Archiving SAST results and cleaning workspace..."
-            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json, pytest-full-report.json', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'semgrep_scan.json, bandit_scan.json, zap-report.html, pytest-full-report.json','zap_scan.json','trivy_scan.json', 'gitleaks_scan.json', allowEmptyArchive: true
             //sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
             //cleanWs()
         }
