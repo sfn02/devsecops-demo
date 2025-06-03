@@ -68,7 +68,7 @@ pipeline {
                 stage('Secrets Scanning - Gitleaks'){
                     steps{
                         script{
-                            sh 'gitleaks detect . -v -f json -r gitleaks_scan.json || true'
+                            sh 'gitleaks detect . -v -f json -r gitleaks_scan.json'
                             sh """
                                 jq -c '
                                     .[] | 
