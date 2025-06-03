@@ -127,3 +127,4 @@ if 'test' in sys.argv:
 
 SESSION_COOKIE_HTTPONLY = True
 SALT = "TGWglAnagL1HIvWyKuNeYKl_J9K73nAIMNWofa7zW6E="
+CSRF_COOKIE_HTTPONLY = True

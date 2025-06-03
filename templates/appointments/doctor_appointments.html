@@ -10,7 +10,7 @@
                 <div class="card-body p-4">
                     <h2 class="text-center mb-4">My Appointments</h2>
 
-                    <!-- Dropdown Filter -->
+                    
                     <div class="mb-3 text-end">
                         <select class="form-select w-auto d-inline-block"
                                 hx-get="{% url 'doctor_appointments' %}"
@@ -26,7 +26,7 @@
                         </select>
                     </div>
 
-                    <!-- Appointments Table -->
+                    
                     <div class="table-responsive">
                         <table class="table table-bordered table-hover align-middle">
                             <thead class="table-light">
@@ -57,7 +57,7 @@
                                     </td>
                                     <td>
                                         {% if appointment.status == 'scheduled' %}
-                                            <!-- Confirm -->
+                                          
                                             <form method="post"
                                                   hx-patch="{% url 'appointment_update' appointment.id %}"
                                                   hx-target="#appointment-{{ appointment.id }}"
@@ -70,7 +70,7 @@
                                         {% endif %}
 
                                         {% if appointment.status == 'scheduled' or appointment.status == 'confirmed' %}
-                                            <!-- Mark as Completed -->
+                                         
                                             <form method="post"
                                                   hx-patch="{% url 'appointment_update' appointment.id %}"
                                                   hx-target="#appointment-{{ appointment.id }}"
@@ -83,7 +83,7 @@
                                         {% endif %}
 
                                         {% if appointment.status != 'cancelled' and appointment.status != 'completed' %}
-                                            <!-- Cancel -->
+                                     
                                             <form method="post"
                                                   hx-patch="{% url 'appointment_update' appointment.id %}"
                                                   hx-target="#appointment-{{ appointment.id }}"

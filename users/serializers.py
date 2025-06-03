@@ -8,12 +8,7 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    cin = serializers.CharField(required=True,validators=[
-        UniqueValidator(
-            queryset=User.objects.all(),
-            message="This CIN is already in use"
-        )
-    ])
+    cin = serializers.CharField(required=True)
     password = serializers.CharField(
         min_length=8,
         required=True,
@@ -40,7 +35,9 @@ class UserSerializer(serializers.ModelSerializer):
         import re
         if not re.match(r'^[A-Z]{1,2}\d{5,6}$', value):
             raise serializers.ValidationError("Format CIN invalide")
-        return value.upper()
+        if User.objects.filter(_cin=value).exists():
+            raise serializers.ValidationError("CIN already in use")
+        return value
 
     def validate_password(self, value):
         import re
@@ -50,14 +47,14 @@ class UserSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        validated_data.pop('confirm_password')  # Remove confirm_password before creation
+        validated_data.pop('confirm_password')  
         user = User.objects.create_user(
             email=validated_data['email'],
             password=validated_data['password'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             cin=validated_data['cin'],
-            role=validated_data.get('role', 'patient')  # Default role
+            role=validated_data.get('role', 'patient') 
         )
         patient = Patient.objects.create(
             user=user

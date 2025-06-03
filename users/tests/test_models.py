@@ -11,13 +11,13 @@ from django.utils import timezone
 
 @pytest.fixture
 def doctor_instance():
-    user = baker.make(User, role='doctor', is_staff=True)
+    user = baker.make(User, _cin='AA909090', role='doctor', is_staff=True)
     doctor = baker.make(Doctor, user=user, speciality='cardiologist')
     return doctor
 
 @pytest.fixture
 def patient_instance():
-    user = baker.make(User, role='patient')
+    user = baker.make(User, _cin='BB909090', role='patient')
     patient = baker.make(Patient, user=user)
     return patient
 
@@ -170,7 +170,7 @@ def test_appointment_confirm_method(patient_instance, doctor_instance):
     assert appointment.status == 'confirmed'
 
 @pytest.mark.django_db
-def test_appointment_mark_completed_method(patient_instance, doctor_instance):
+def test_appointment_complete_method(patient_instance, doctor_instance):
     appointment = baker.make(
         Appointment,
         patient=patient_instance,
@@ -179,5 +179,6 @@ def test_appointment_mark_completed_method(patient_instance, doctor_instance):
         date_scheduled=timezone.now() + timezone.timedelta(days=1)
     )
     assert appointment.status == 'confirmed'
-    appointment.mark_completed()
+    appointment.complete()
     assert appointment.status == 'completed'
+    

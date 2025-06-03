@@ -1,27 +1,20 @@
 from django.views import View
 from django.shortcuts import render,redirect
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse
 from django.urls import reverse
 from django.contrib.auth import authenticate,get_user_model,logout
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.password_validation import validate_password
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import  ProfileSerializer,UserSerializer, CustomTokenObtainPairSerializer
-from .models import User
+from users.serializers import  UserSerializer, CustomTokenObtainPairSerializer
+from users.models import User
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import NotAuthenticated
-from .forms import RegisterForm, AppointmentForm
-from django.contrib.auth.mixins import LoginRequiredMixin
-from datetime import datetime,timedelta
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-import json
+from users.forms import RegisterForm
 from rest_framework_simplejwt.exceptions import TokenError,InvalidToken
    
      
@@ -95,6 +88,7 @@ class LoginView(TokenObtainPairView):
                 secure=False,
                 samesite='Lax'
             )
+
             if request.headers.get('HX-Request') == 'true':
                 response['HX-Redirect'] = reverse('profile_view')
             return response
@@ -197,3 +191,6 @@ class RefreshTokenView(TokenRefreshView):
                         "error":str(e)
                     }
                 )
+
+
+

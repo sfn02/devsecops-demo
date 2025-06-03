@@ -2,7 +2,7 @@ from django import forms
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from .models import Appointment, Doctor
-
+from datetime import timedelta
 class AppointmentForm(forms.ModelForm):
     speciality = forms.ChoiceField(
         choices=Doctor.SPECIALITY_CHOICES, 
@@ -49,6 +49,7 @@ class AppointmentForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         user = self.request.user
+        doctor = self.cleaned_data.get('doctor')
         
         if not hasattr(user, 'patient'):
             return cleaned_data
@@ -72,6 +73,25 @@ class AppointmentForm(forms.ModelForm):
                 raise ValidationError({
                     'date_scheduled': 'Rendez-vous disponibles entre 7AM-5PM seulement'
                 })
+            if doctor:
+           
+                appointment_duration = timedelta(minutes=30) 
+                start_time = date_scheduled
+                end_time = date_scheduled + appointment_duration
+                existing_appointments = Appointment.objects.filter(
+                    doctor=doctor,
+                    date_scheduled__lt=end_time, 
+                    date_scheduled__gte=start_time - appointment_duration  
+                )
+
+                if self.instance and self.instance.pk:
+                    existing_appointments = existing_appointments.exclude(pk=self.instance.pk)
+
+                if existing_appointments.exists():
+                    conflicting_appointment = existing_appointments.first()
+                    raise ValidationError({
+                        'date_scheduled': f'Le docteur a déjà un rendez-vous à {conflicting_appointment.date_scheduled.strftime("%H:%M")} le {conflicting_appointment.date_scheduled.strftime("%d/%m/%Y")}'
+                    })
 
         return cleaned_data
 

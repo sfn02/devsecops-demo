@@ -1,21 +1,14 @@
-# main/views.py
-from django.views.generic import ListView, CreateView, View
 from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse_lazy
 from django.shortcuts import render
-from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Appointment
 from .forms import AppointmentForm
 from rest_framework.views import APIView
-from django.http import HttpResponse
-from django.template.loader import render_to_string
-from .models import Doctor
-from rest_framework.permissions import IsAuthenticated,AllowAny
+from users.models import Doctor, User
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
-from django.http import JsonResponse
-from main.serializers import AppointmentSerializer,DoctorSerializer
+from main.serializers import AppointmentSerializer,DoctorSerializer,DoctorAppointmentsSerializer,PatientAppointmentsSerializer
 
 
 class PatientAppointmentListView(APIView):
@@ -29,8 +22,8 @@ class PatientAppointmentListView(APIView):
     def get(self,request,pk=None):
         apointments = Appointment.objects.filter(patient=request.user.patient)
         serializer = AppointmentSerializer(apointments,many=True)
-        if request.headers['Accept'] == 'application/json':
-            return JsonResponse(serializer.data,safe=False)
+        if request.headers.get('Accept') == 'application/json':
+            return Response(serializer.data)
         return render(request,'appointments/patient_appointments.html',{"appointments":serializer.data})    
 
 
@@ -123,11 +116,10 @@ class DoctorAppointmentListView(APIView):
                 appointments = appointments.filter(doctor=request.user.doctor,status=appointment_status)
 
         serializer = AppointmentSerializer(appointments,many=True)    
-        print(serializer.data)
-        if request.headers['Accept'] == 'application/json':
+
+        if request.headers.get('Accept') == 'application/json':
             return Response(serializer.data)
         if request.headers.get('HX-Request'):
-            print('hx-here')
             return render(request,'appointments/partials/_appointments_table.html',{"appointments":serializer.data})  
             
         return render(request,'appointments/doctor_appointments.html',{"appointments":serializer.data})    
@@ -151,6 +143,30 @@ class DoctorUpdateAppointmentView(APIView):
                 case 'confirmed':
                     appointment.confirm() 
                 case 'completed':
-                    appointment.mark_completed()
+                    appointment.complete()
         serializer = AppointmentSerializer(appointment)          
         return render(request,'appointments/partials/_appointment_row.html',{"appointment":serializer.data}) 
+
+
+class UserAppointmentsView(APIView):
+    def get(self,request,pk):
+        user = User
+        if request.user.role == 'patient':
+            patient = request.user.patient
+            serializer = PatientAppointmentsSerializer(patient)
+            return Response(
+                serializer.data
+            )
+        elif request.user.role == 'doctor':
+            doctor = request.user.doctor
+            serializer = DoctorAppointmentsSerializer(doctor)
+            return Response(
+                serializer.data
+            )
+        else:
+            return Response({
+                "error":f"{request.user} have no registered doctor or patient account"
+            })
+        return Response({
+            "message":f"Nothing to show for user {request.user.role}"
+        })
