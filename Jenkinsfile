@@ -266,8 +266,8 @@ pipeline {
                         }
                         
                         sh """
-                        python -m pytest --json-report --json-report-summary --json-report-file ${LOGDIR}/pytest-summary.log &
-                        python -m pytest --json-report --json-report-file ./pytest-full-report.json
+                        python3 -m pytest --json-report --json-report-summary --json-report-file ${LOGDIR}/pytest-summary.log &
+                        python3 -m pytest --json-report --json-report-file ./pytest-full-report.json
                         deactivate
                         rm -rf ./test_env
                         """

@@ -1,0 +1,702 @@
+{
+	"info": {
+		"_postman_id": "783bfd5f-da5c-4525-9202-badf1b1a55fe",
+		"name": "Test Access Controls",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44453496"
+	},
+	"item": [
+		{
+			"name": "Create account for user 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let users = JSON.parse(pm.environment.get('users'))",
+							"let user = users[2]",
+							"let json_raw = {",
+							"    \"first_name\":user.first_name,",
+							"    \"last_name\":user.last_name,",
+							"    \"email\":user.email,",
+							"    \"password\":user.password,",
+							"    \"confirm_password\":user.password,",
+							"    \"cin\":user.cin",
+							"}",
+							"",
+							"pm.request.body.raw = json_raw",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let results = []",
+							"",
+							"let result = {",
+							"    \"tool\":\"newman\",",
+							"    \"request_id\":pm.info.requestId,",
+							"    \"request_name\":pm.info.requestName,",
+							"    \"status\":pm.response.status,",
+							"    \"code\":pm.response.code",
+							"}",
+							"",
+							"results.push(result)",
+							"",
+							"",
+							"",
+							"pm.environment.set('results',results)",
+							"",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/users/auth/register/",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"users",
+						"auth",
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create account for user 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let users = JSON.parse(pm.environment.get('users'))",
+							"let user = users[3]",
+							"let json_raw = {",
+							"    \"first_name\":user.first_name,",
+							"    \"last_name\":user.last_name,",
+							"    \"email\":user.email,",
+							"    \"password\":user.password,",
+							"    \"confirm_password\":user.password,",
+							"    \"cin\":user.cin",
+							"}",
+							"",
+							"pm.request.body.raw = json_raw",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let results = []",
+							"",
+							"let result = {",
+							"    \"tool\":\"newman\",",
+							"    \"request_id\":pm.info.requestId,",
+							"    \"request_name\":pm.info.requestName,",
+							"    \"status\":pm.response.status,",
+							"    \"code\":pm.response.code",
+							"}",
+							"",
+							"results.push(result)",
+							"",
+							"",
+							"",
+							"pm.environment.set('results',results)",
+							"",
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/users/auth/register/",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"users",
+						"auth",
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login as user 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let users = JSON.parse(pm.environment.get('users'))",
+							"let user = users[2]",
+							"let json_raw = {",
+							"    \"email\":user.email,",
+							"    \"password\":user.password",
+							"}",
+							"pm.request.body.raw = json_raw"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let results = pm.environment.get('results')",
+							"",
+							"let auth_token = pm.response.json().access",
+							"let result = {",
+							"    \"tool\":\"newman\",",
+							"    \"request_id\":pm.info.requestId,",
+							"    \"request_name\":pm.info.requestName,",
+							"    \"status\":pm.response.status,",
+							"    \"code\":pm.response.code",
+							"}",
+							"results.push(result)",
+							"pm.environment.set('results',results)",
+							"pm.environment.set('auth_token_user_1',auth_token)",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Access token received\", function(){",
+							"    pm.response.json().access",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/users/auth/login/",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"users",
+						"auth",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get doctor by sepeciality",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"results = pm.environment.get('results')",
+							"",
+							"let result = {",
+							"    \"tool\":\"newman\",",
+							"    \"request_id\":pm.info.requestId,",
+							"    \"request_name\":pm.info.requestName,",
+							"    \"status\":pm.response.status,",
+							"    \"code\":pm.response.code",
+							"}",
+							"",
+							"results.push(result)",
+							"",
+							"pm.environment.set('results',results)",
+							"var doctor_id = pm.response.json()[0].id",
+							"",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(200)}",
+							"    )",
+							"    pm.environment.set('doctor_id',doctor_id)",
+							"",
+							"    ",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true,
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_token_user_1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"first_name\":\"Modified\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/doctor/filter-doctors/?speciality=neurologist",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"doctor",
+						"filter-doctors",
+						""
+					],
+					"query": [
+						{
+							"key": "speciality",
+							"value": "neurologist",
+							"description": "filter doctor by speciality to book an appointment"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create appointment for user 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var date = new Date();",
+							"var year = String(date.getFullYear());",
+							"var month = String(date.getMonth()+2);",
+							"var month = month.padStart(2,\"0\")",
+							"var day = String(date.getDay());",
+							"var day = day.padStart(2,\"0\")",
+							"var formated_date = year + \"-\" + month + \"-\" + \"20\" + \"T\" + \"09\" + \":\" + \"45\"",
+							"pm.environment.set('appointment_scheduled_date',formated_date)"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"results = pm.environment.get('results')",
+							"",
+							"let result = {",
+							"    \"tool\":\"newman\",",
+							"    \"request_id\":pm.info.requestId,",
+							"    \"request_name\":pm.info.requestName,",
+							"    \"status\":pm.response.status,",
+							"    \"code\":pm.response.code",
+							"}",
+							"",
+							"results.push(result)",
+							"",
+							"pm.environment.set('results',results)",
+							"var created_appointment_id = pm.response.json().id",
+							"var success = pm.response.json().success",
+							"",
+							"",
+							"",
+							"",
+							"pm.test(\"Appointment created status 201\", function () {",
+							"    pm.response.to.have.status(201)",
+							"    })",
+							"",
+							"pm.test(\"Success message recieved\", function(){",
+							"    success == \"appointment created\"",
+							"})",
+							"",
+							"pm.environment.set('created_appointment_id',created_appointment_id)",
+							"    ",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_token_user_1}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"doctor\":{{doctor_id}},\n    \"reason\":\"suivi\",\n    \"speciality\":\"neurologist\",\n    \"date_scheduled\":\"{{appointment_scheduled_date}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/patient/appointments/create/",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"patient",
+						"appointments",
+						"create",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login as user 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let users = JSON.parse(pm.environment.get('users'))",
+							"let user = users[0]",
+							"let json_raw = {",
+							"    \"email\":user.email,",
+							"    \"password\":user.password",
+							"}",
+							"pm.request.body.raw = json_raw"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let results = pm.environment.get('results')",
+							"",
+							"let auth_token = pm.response.json().access",
+							"let result = {",
+							"    \"tool\":\"newman\",",
+							"    \"request_id\":pm.info.requestId,",
+							"    \"request_name\":pm.info.requestName,",
+							"    \"status\":pm.response.status,",
+							"    \"code\":pm.response.code",
+							"}",
+							"results.push(result)",
+							"pm.environment.set('results',results)",
+							"pm.environment.set('auth_token_user_2',auth_token)",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Access token received\", function(){",
+							"    pm.response.json().access",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/users/auth/login/",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"users",
+						"auth",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user 2 cancel appointment of user 1",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var created_appointment_id = pm.environment.get('created_appointment_id')",
+							"",
+							"if(! created_appointment_id){",
+							"    console.warn(\"results from last request were not saved properly\")",
+							"    pm.execution.setNextRequest(null)",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"results = pm.environment.get('results')",
+							"",
+							"let result = {",
+							"    \"tool\":\"newman\",",
+							"    \"request_id\":pm.info.requestId,",
+							"    \"request_name\":pm.info.requestName,",
+							"    \"status\":pm.response.status,",
+							"    \"code\":pm.response.code",
+							"}",
+							"",
+							"results.push(result)",
+							"",
+							"pm.environment.set('results',results)",
+							"",
+							"var code = pm.response.code",
+							"var created_appointment_id = pm.environment.get('created_appointment_id')",
+							"",
+							"",
+							"",
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403)}",
+							"    )",
+							"   ",
+							"    console.log(`Appointment with id ${created_appointment_id} was deleted`)",
+							"    ",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{auth_token_user_2}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/patient/appointments/{{created_appointment_id}}/cancel/",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"patient",
+						"appointments",
+						"{{created_appointment_id}}",
+						"cancel",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "Baseurl",
+			"value": "http://rendez-vous.test:8000",
+			"type": "string"
+		}
+	]
+}
