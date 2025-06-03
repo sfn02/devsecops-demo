@@ -247,7 +247,7 @@ pipeline {
 
                         echo "pip-audit Scan Summary: ${pipAuditCriticalHighCount} Critical/High findings, ${pipAuditMediumCount} Medium findings."
 
-                        if (pipAuditCriticalHighCount > 0 || pipAuditMediumCount > 0) {
+                        if (pipAuditCount > 0 ) {
                             sh """
                                 jq -c '
                                 .vulnerabilities[] | {
@@ -262,15 +262,7 @@ pipeline {
                                 fix_versions: .fix_versions
                                 }' pip_audit_scan.json | tee ${LOGDIR}/pip_audit.log
                             """
-                        }
-
-                        if (pipAuditCriticalHighCount > 0) {
-                            echo "SECURITY GATE FAILED: pip-audit detected ${pipAuditCriticalHighCount} Critical/High severity findings. Deployment will be blocked."
-                            env.DEPLOY_ALLOWED = "false"
-                        }
-                        def maxAllowedPipAuditMedium = 0
-                        if (pipAuditMediumCount > maxAllowedPipAuditMedium) {
-                            echo "QUALITY GATE FAILED: pip-audit detected ${pipAuditMediumCount} Medium severity findings, exceeding threshold of ${maxAllowedPipAuditMedium}. Deployment will be blocked."
+                            echo "SECURITY GATE FAILED: pip-audit detected ${pipAuditCount} Critical/High severity findings. Deployment will be blocked."
                             env.DEPLOY_ALLOWED = "false"
                         }
                         
