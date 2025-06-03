@@ -127,6 +127,7 @@ if 'test' in sys.argv:
         ] 
 
 SESSION_COOKIE_HTTPONLY = True
-SALT = "TGWglAnagL1HIvWyKuNeYKl_J9K73nAIMNWofa7zW6E="
+#SALT = "TGWglAnagL1HIvWyKuNeYKl_J9K73nAIMNWofa7zW6E="
+SALT = os.environ.get('SALT','TGWglAnagL1HIvWyKuNeYKl_J9K73nAIMNWofa7zW6E=')
 CSRF_COOKIE_HTTPONLY = True
-print(BASE_DIR)
+
