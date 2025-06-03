@@ -3,7 +3,8 @@ import os,sys
 
 from dotenv import load_dotenv
 from datetime import timedelta
-load_dotenv('/home/shr3dr/projects/devsecops-demo/RendezVous/.env')
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 load_dotenv(os.path.join(BASE_DIR,'.env'))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '$2a$10$zMv2skn0DWEfsZGG91rC/O')
@@ -128,3 +129,4 @@ if 'test' in sys.argv:
 SESSION_COOKIE_HTTPONLY = True
 SALT = "TGWglAnagL1HIvWyKuNeYKl_J9K73nAIMNWofa7zW6E="
 CSRF_COOKIE_HTTPONLY = True
+print(BASE_DIR)
