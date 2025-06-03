@@ -386,7 +386,7 @@ pipeline {
             pytest-full-report.json, zap_scan.json, trivy_scan.json, gitleaks_scan.json, 
             pip_audit_scan.json, trivy_iac_scan.json,newman_results, newman_ac_results''', allowEmptyArchive: true
             sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
-            cleanWs()
+            //cleanWs()
         }
         success {
             echo "Build ${env.BUILD_NUMBER} successfully built and passed all gates."
