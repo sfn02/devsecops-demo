@@ -25,6 +25,8 @@
 							"}",
 							"",
 							"pm.request.body.raw = json_raw",
+							"",
+							"",
 							""
 						],
 						"type": "text/javascript",
@@ -47,8 +49,14 @@
 							"",
 							"results.push(result)",
 							"",
+							"",
+							"",
 							"pm.environment.set('results',results)",
 							"",
+							"",
+							"if (pm.response.code === 400){",
+							"    pm.execution.setNextRequest('Login User')",
+							"}",
 							"pm.test(\"Successful POST request\", function () {",
 							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
 							"});",
@@ -114,7 +122,6 @@
 							"    \"email\":user.email,",
 							"    \"password\":user.password",
 							"}",
-							"",
 							"pm.request.body.raw = json_raw"
 						],
 						"type": "text/javascript",
@@ -125,9 +132,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"let results = JSON.parse(pm.environment.get('results'))",
-							"let auth_token = pm.response.json().access",
+							"let results = pm.environment.get('results')",
 							"",
+							"let auth_token = pm.response.json().access",
 							"let result = {",
 							"    \"tool\":\"newman\",",
 							"    \"request_id\":pm.info.requestId,",
@@ -135,10 +142,10 @@
 							"    \"status\":pm.response.status,",
 							"    \"code\":pm.response.code",
 							"}",
-							"",
+							"results.push(result)",
 							"pm.environment.set('results',results)",
 							"pm.environment.set('auth_token',auth_token)",
-							"console.log(auth_token)",
+							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.response.to.have.status(200);",
 							"});",
@@ -217,7 +224,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"results = JSON.parse(pm.environment.get('results'))",
+							"results = pm.environment.get('results')",
 							"",
 							"let result = {",
 							"    \"tool\":\"newman\",",
@@ -302,7 +309,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"results = JSON.parse(pm.environment.get('results'))",
+							"results = pm.environment.get('results')",
 							"",
 							"let result = {",
 							"    \"tool\":\"newman\",",
@@ -376,7 +383,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"results = JSON.parse(pm.environment.get('results'))",
+							"results = pm.environment.get('results')",
 							"",
 							"let result = {",
 							"    \"tool\":\"newman\",",
@@ -475,7 +482,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"results = JSON.parse(pm.environment.get('results'))",
+							"results = pm.environment.get('results')",
 							"",
 							"let result = {",
 							"    \"tool\":\"newman\",",
@@ -577,7 +584,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"results = JSON.parse(pm.environment.get('results'))",
+							"results = pm.environment.get('results')",
 							"",
 							"let result = {",
 							"    \"tool\":\"newman\",",
@@ -660,12 +667,5 @@
 				"type": "string"
 			}
 		]
-	},
-	"variable": [
-		{
-			"key": "Baseurl",
-			"value": "http://rendez-vous.test",
-			"type": "string"
-		}
-	]
+	}
 }
