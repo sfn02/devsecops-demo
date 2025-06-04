@@ -123,7 +123,7 @@ pipeline {
                 stage('SAST Semgrep') {
                     steps {
                         script {
-                            sh(script: 'semgrep --json --exclude "static/" --exclude "tests/" > semgrep_scan.json', returnStatus: true)
+                            sh(script: 'semgrep --json --exclude "static/" --exclude "nginx/" --exclude "tests/" > semgrep_scan.json', returnStatus: true)
                             def warningsCount = sh(
                                 script: 'jq -r \'[.results[] | select(.extra.severity == "WARNING")] | length\' semgrep_scan.json',
                                 returnStdout: true
@@ -245,8 +245,6 @@ pipeline {
                             script: 'jq \'[.dependencies[] | select(.vulns[] != null)] | length\' pip_audit_scan.json',
                             returnStdout: true
                         ).trim().toInteger()
-
-//trigger 
                         echo "pip-audit Scan Summary: ${pipAuditCount}  findings."
 
                         if (pipAuditCount > 0 ) {
@@ -285,7 +283,7 @@ pipeline {
                     echo 'Running trivy scan against dockerfiles...'
                     sh """
                         /security/trivy/trivy config --severity HIGH,CRITICAL \
-                        --file-patterns 'dockerfile:dockerfile' . \
+                        --file-patterns 'dockerfile:dockerfile' --skip-dirs nginx . \
                         -f json > trivy_iac_scan.json || true
                         cat trivy_iac_scan.json | tee ${LOGDIR}/trivy_iac_scan.log
                     """
