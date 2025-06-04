@@ -327,7 +327,7 @@ pipeline {
                         --delay-request 1000 --timeout-request 3000 \
                         --export-environment env.json || true
                         jq -c '.values[] | select(.key == "results")' env.json | tee newman_ac_results.json \
-                        cat newman_results.json | tee ${LOGDIR}/newman_ac.log
+                        cat newman_ac_results.json | tee ${LOGDIR}/newman_ac.log
 
                         """
                     }
