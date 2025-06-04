@@ -291,7 +291,9 @@ pipeline {
                     """
                     
                     def trivyIacCriticalHighCount = sh(
-                        script: 'jq -r \'[.Results[] | .Misconfigurations[] | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | length\' trivy_iac_scan.json',
+                        script: """jq -r '[.Results[] | select(.Misconfigurations > 0 ) |\
+                            .Misconfigurations[] | select(.Severity == "CRITICAL" or .Severity == "HIGH")] | \
+                            length' trivy_iac_scan.json""",
                         returnStdout: true
                     ).trim().toInteger()
 
