@@ -20,5 +20,7 @@ COPY ./tests/app/entrypoint.sh /app/tests/app/entrypoint.sh
 
 COPY ./tests/app/doctors.json /app/tests/app/doctors.json
 
-# Use absolute path for entrypoint
+RUN useradd appuser && chown -R appuser:appuser /app
+USER appuser
+
 CMD ["/app/tests/app/entrypoint.sh"]

@@ -19,7 +19,8 @@ from rest_framework_simplejwt.exceptions import TokenError,InvalidToken
    
      
 class RegisterView(APIView):
-
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'register'
     def get(self,request):
         form = RegisterForm()
         context = {"form":form}
@@ -55,7 +56,8 @@ class RegisterView(APIView):
             })
 
 class LoginView(TokenObtainPairView):
-    serializer_class = CustomTokenObtainPairSerializer
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'login'
     def post(self,request,*args,**kwargs):
         response_from_jwt = super().post(request,*args,**kwargs)
 

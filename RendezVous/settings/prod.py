@@ -87,15 +87,20 @@ AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-
-    # 
-
         'users.authentication.CustomJWTAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
-    #,    'DEFAULT_PERMISSION_CLASSES': (
-    #    'rest_framework.permissions.IsAuthenticated', # Default to authenticated
-    #)
+    ),
+    'DEFAULT_THROTTLE_CLASSES': [ 
+        'rest_framework.throttling.AnonRateThrottle', 
+        'rest_framework.throttling.ScopedRateThrottle',  
+        ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',   
+        'user': '600/day',  
+
+        'login': '5/min', 
+        'register': '5/min', 
+        }
 }
 
 SIMPLE_JWT = {
