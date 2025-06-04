@@ -16,6 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import NotAuthenticated
 from users.forms import RegisterForm
 from rest_framework_simplejwt.exceptions import TokenError,InvalidToken
+from rest_framework.throttling import ScopedRateThrottle
    
      
 class RegisterView(APIView):
