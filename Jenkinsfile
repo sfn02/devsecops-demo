@@ -343,6 +343,8 @@ pipeline {
                         -v /opt/devsecops/reports:/zap/wrk:rw \
                         zaproxy/zap-weekly zap-baseline.py -t http://nginx \
                         -J zap_scan.json -r zap-report.html || true
+                        cp /security/reports/zap-report.html .
+                        cp /security/reports/zap_scan.json .
                         cat zap_scan.json | tee ${LOGDIR}/zap_scan.log
                     """
                     
