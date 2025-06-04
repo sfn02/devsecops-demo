@@ -69,7 +69,7 @@ class AppointmentCreateView(APIView):
 class CancelAppointmentView( APIView):
     permission_classes = [IsAuthenticated] 
     def delete(self,request,pk):
-        appointment = get_object_or_404(Appointment, pk=pk)#, patient=request.user.patient)
+        appointment = get_object_or_404(Appointment, pk=pk, patient=request.user.patient)
 
         if appointment.status != 'cancelled' and appointment.status != 'completed':
             appointment.cancel()
