@@ -5,7 +5,6 @@ charset-normalizer==3.4.2
 cryptography==44.0.3
 Django==5.2.1
 djangorestframework==3.16.0
-djangorestframework-simplejwt==5.2.2
 gunicorn==23.0.0
 idna==3.10
 PyJWT==2.4.0
@@ -21,3 +20,9 @@ pytest-django
 model_bakery
 pytest-json-report
 bs4
+
+djangorestframework-simplejwt>5.3.1
+#djangorestframework-simplejwt==5.2.2
+
+setuptools==78.1.1
+#setuptools==66.1.1
