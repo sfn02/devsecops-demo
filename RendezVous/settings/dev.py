@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'csp',
     'users',
     'main',
 ]
@@ -33,7 +34,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'RendezVous.middlewares.CustomMiddleWare'
+    'RendezVous.middlewares.CustomMiddleWare',
 ]
 
 ROOT_URLCONF = 'RendezVous.urls'
@@ -133,6 +134,7 @@ if 'test' in sys.argv:
 
 SESSION_COOKIE_HTTPONLY = True
 #SALT = "TGWglAnagL1HIvWyKuNeYKl_J9K73nAIMNWofa7zW6E="
-SALT = os.environ.get('SALT','TGWglAnagL1HIvWyKuNeYKl_J9K73nAIMNWofa7zW6E=')
+SALT = os.environ.get('SALT')
+
 CSRF_COOKIE_HTTPONLY = True
 

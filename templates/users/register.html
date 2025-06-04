@@ -4,6 +4,7 @@
 {% block title %}Register{% endblock title %}
 
 {% block content %}
+<script src="{% static 'js/index.js'%}"></script>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
@@ -109,34 +110,5 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const passwordField = document.getElementById('password');
-        const confirmPasswordField = document.getElementById('confirm_password');
-        const feedbackDiv = document.getElementById('password_match_feedback');
 
-        function validatePasswordMatch() {
-            if (passwordField.value !== confirmPasswordField.value) {
-                confirmPasswordField.classList.add('is-invalid');
-                feedbackDiv.style.display = 'block';
-                confirmPasswordField.setCustomValidity("Passwords do not match.");
-            } else {
-                confirmPasswordField.classList.remove('is-invalid');
-                feedbackDiv.style.display = 'none';
-                confirmPasswordField.setCustomValidity(""); 
-            }
-        }
-
-        passwordField.addEventListener('input', validatePasswordMatch);
-        confirmPasswordField.addEventListener('input', validatePasswordMatch);
-
-        const form = confirmPasswordField.closest('form');
-        form.addEventListener('submit', function(event) {
-            validatePasswordMatch();
-            if (confirmPasswordField.classList.contains('is-invalid')) {
-                event.preventDefault(); 
-            }
-        });
-    });
-</script>
 {% endblock content %}
