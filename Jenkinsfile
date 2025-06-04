@@ -14,7 +14,6 @@ pipeline {
     }
     environment {
         LOGDIR="/security/logs/build-${env.BUILD_NUMBER}"
-        // Initialize the deployment flag to true. It will be set to "false" by any failing security gate.
         DEPLOY_ALLOWED = "true" 
     }
 
@@ -361,7 +360,7 @@ pipeline {
                     }
                     def maxAllowedZapMedium = 0
                     if (zapMediumAlertsCount > maxAllowedZapMedium) {
-                        echo "QUALITY GATE FAILED: ZAP DAST detected ${zapMediumAlertsCount} Medium severity alerts, exceeding threshold of ${maxAllowedZapMedium}. Deployment will be blocked."
+                        echo "QUALITY GATE FAILED: ZAP DAST detected ${zapMediumAlertsCount} Medium severity alerts, Deployment will be blocked."
                         env.DEPLOY_ALLOWED = "false"
                     }
                 }
@@ -388,7 +387,7 @@ pipeline {
             pytest-full-report.json, zap_scan.json, trivy_scan.json, gitleaks_scan.json, 
             pip_audit_scan.json, trivy_iac_scan.json,newman_results, newman_ac_results''', allowEmptyArchive: true
             sh 'docker compose -f docker-compose.dev.yaml down --remove-orphans --volumes'
-            //cleanWs()
+            cleanWs()
         }
         success {
             echo "Build ${env.BUILD_NUMBER} successfully built and passed all gates."
