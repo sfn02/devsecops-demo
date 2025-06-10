@@ -7,7 +7,7 @@ from .views import (PatientAppointmentListView,
         DoctorAppointmentListView,
         DoctorUpdateAppointmentView,
         UserAppointmentsView,
-        check_header)
+        )
 
 urlpatterns = [
     path('patient/appointments/', PatientAppointmentListView.as_view(), name='patient_appointments'),
