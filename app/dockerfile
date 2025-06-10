@@ -34,6 +34,6 @@ COPY . .
 EXPOSE 8000
 
 RUN useradd appuser && chown -R appuser:appuser /app
-USER appuser
+#USER appuser
 
 ENTRYPOINT ["/app/app/entrypoint.sh"]
