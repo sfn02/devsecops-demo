@@ -374,11 +374,7 @@ pipeline {
         stage('Deployment Security Gate') {
             steps {
                 script {
-                    if (env.DEPLOY_ALLOWED == "true") {
-                        echo "All security gates passed. Proceeding with deployment."
-                    } else {
                         error "Deployment blocked due to security findings. Review previous scan stages for details in logs."
-                    }
                 }
             }
         }
