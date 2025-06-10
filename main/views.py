@@ -9,7 +9,7 @@ from rest_framework.exceptions import NotAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from main.serializers import AppointmentSerializer,DoctorSerializer,DoctorAppointmentsSerializer,PatientAppointmentsSerializer
-
+from rest_framework.decorators import api_view
 
 class PatientAppointmentListView(APIView):
     permission_classes = [IsAuthenticated]
@@ -170,3 +170,5 @@ class UserAppointmentsView(APIView):
         return Response({
             "message":f"Nothing to show for user {request.user.role}"
         })
+
+

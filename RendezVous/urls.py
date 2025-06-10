@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/',include('users.urls')),
     path('',include('main.urls')),
-    path('',root_redirect.as_view(),)
+    path('',root_redirect.as_view(),),
+    
 ]

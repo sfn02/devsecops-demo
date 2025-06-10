@@ -6,7 +6,8 @@ from .views import (PatientAppointmentListView,
         filter_doctors_by_speciality,
         DoctorAppointmentListView,
         DoctorUpdateAppointmentView,
-        UserAppointmentsView)
+        UserAppointmentsView,
+        check_header)
 
 urlpatterns = [
     path('patient/appointments/', PatientAppointmentListView.as_view(), name='patient_appointments'),
@@ -16,6 +17,8 @@ urlpatterns = [
     path('doctor/filter-doctors/', filter_doctors_by_speciality.as_view(), name='filter_doctors_by_speciality'),
     path('doctor/appointments/', DoctorAppointmentListView.as_view(), name='doctor_appointments'),
     path('doctor/appointments/<int:pk>/update', DoctorUpdateAppointmentView.as_view(), name='appointment_update'),
-    path('api/test/appointments/<int:pk>',UserAppointmentsView.as_view())
+    path('api/test/appointments/<int:pk>',UserAppointmentsView.as_view()),
+    path('api/check',check_header)
+
 
 ]
